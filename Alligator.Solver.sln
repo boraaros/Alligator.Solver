@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver", "Alligator.Solver.csproj", "{C55729C5-DA81-457F-9289-2EF721B6B100}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver", "Alligator.Solver\Alligator.Solver.csproj", "{C55729C5-DA81-457F-9289-2EF721B6B100}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver.Demo", "..\Alligator.Solver.Demo\Alligator.Solver.Demo.csproj", "{938A6E0D-4CC3-4C44-946F-9DE299B6520C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver.Demo", "Alligator.Solver.Demo\Alligator.Solver.Demo.csproj", "{938A6E0D-4CC3-4C44-946F-9DE299B6520C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver.UnitTests", "..\Alligator.Solver.UnitTests\Alligator.Solver.UnitTests.csproj", "{CED84445-25DB-451B-99C6-303685CD6B8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver.UnitTests", "Alligator.Solver.UnitTests\Alligator.Solver.UnitTests.csproj", "{CED84445-25DB-451B-99C6-303685CD6B8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
