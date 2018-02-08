@@ -39,6 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caches\CacheTables.cs" />
+    <Compile Include="Caches\EvaluationMode.cs" />
+    <Compile Include="Caches\HashTable.cs" />
+    <Compile Include="Caches\ICacheTables.cs" />
+    <Compile Include="Caches\IHashTable.cs" />
+    <Compile Include="Caches\Transposition.cs" />
     <Compile Include="IExternalLogics.cs" />
     <Compile Include="IPosition.cs" />
     <Compile Include="ISolver.cs" />
