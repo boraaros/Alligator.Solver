@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{938A6E0D-4CC3-4C44-946F-9DE299B6520C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{055EA5F5-1597-49BA-AFB3-6AD8B2148600}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Alligator.Solver.Demo</RootNamespace>
-    <AssemblyName>Alligator.Solver.Demo</AssemblyName>
+    <RootNamespace>Alligator.TicTacToe</RootNamespace>
+    <AssemblyName>Alligator.TicTacToe</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,16 +39,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ITicTacToePosition.cs" />
+    <Compile Include="TicTacToeMark.cs" />
+    <Compile Include="TicTacToeCell.cs" />
+    <Compile Include="TicTacToeLogics.cs" />
+    <Compile Include="TicTacToePosition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Alligator.TicTacToe\Alligator.TicTacToe.csproj">
-      <Project>{055ea5f5-1597-49ba-afb3-6ad8b2148600}</Project>
-      <Name>Alligator.TicTacToe</Name>
+    <ProjectReference Include="..\Alligator.Solver\Alligator.Solver.csproj">
+      <Project>{c55729c5-da81-457f-9289-2ef721b6b100}</Project>
+      <Name>Alligator.Solver</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
