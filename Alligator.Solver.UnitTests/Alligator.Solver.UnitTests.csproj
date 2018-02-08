@@ -58,6 +58,10 @@
       <Project>{c55729c5-da81-457f-9289-2ef721b6b100}</Project>
       <Name>Alligator.Solver</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Alligator.TicTacToe\Alligator.TicTacToe.csproj">
+      <Project>{055ea5f5-1597-49ba-afb3-6ad8b2148600}</Project>
+      <Name>Alligator.TicTacToe</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

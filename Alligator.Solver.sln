@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver.Demo", "Al
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.Solver.UnitTests", "Alligator.Solver.UnitTests\Alligator.Solver.UnitTests.csproj", "{CED84445-25DB-451B-99C6-303685CD6B8E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alligator.TicTacToe", "Alligator.TicTacToe\Alligator.TicTacToe.csproj", "{055EA5F5-1597-49BA-AFB3-6AD8B2148600}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{CED84445-25DB-451B-99C6-303685CD6B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CED84445-25DB-451B-99C6-303685CD6B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CED84445-25DB-451B-99C6-303685CD6B8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{055EA5F5-1597-49BA-AFB3-6AD8B2148600}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{055EA5F5-1597-49BA-AFB3-6AD8B2148600}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{055EA5F5-1597-49BA-AFB3-6AD8B2148600}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{055EA5F5-1597-49BA-AFB3-6AD8B2148600}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
