@@ -25,7 +25,7 @@ namespace Alligator.Solver.UnitTests
 
             var externalLogics = new TicTacToeLogics();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<ITicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
@@ -56,7 +56,7 @@ namespace Alligator.Solver.UnitTests
 
             var externalLogics = new TicTacToeLogics();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<ITicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
@@ -88,7 +88,7 @@ namespace Alligator.Solver.UnitTests
 
             var externalLogics = new TicTacToeLogics();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<ITicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
@@ -129,7 +129,7 @@ namespace Alligator.Solver.UnitTests
 
             var externalLogics = new TicTacToeLogics();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<ITicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
