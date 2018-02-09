@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Alligator.Solver.Algorithm;
+using Alligator.Solver.Caches;
+using Alligator.Solver.Heuristics;
+using System;
 
 namespace Alligator.Solver
 {
@@ -24,7 +27,13 @@ namespace Alligator.Solver
 
         public ISolver<TPly> Create()
         {
-            throw new NotImplementedException();
+            var solver = new IterativeSearch<TPosition, TPly>(
+                externalLogics,
+                new CacheTables<TPosition, TPly>(solverConfiguration),
+                new HeuristicTables<TPly>(),
+                solverConfiguration);
+
+            return solver;
         }
     }
 }
