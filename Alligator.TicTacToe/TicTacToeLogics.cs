@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace Alligator.TicTacToe
 {
-    public class TicTacToeLogics : IExternalLogics<ITicTacToePosition, TicTacToeCell>
+    public class TicTacToeLogics : IExternalLogics<TicTacToePosition, TicTacToeCell>
     {
-        public ITicTacToePosition CreateEmptyPosition()
+        public TicTacToePosition CreateEmptyPosition()
         {
             return new TicTacToePosition();
         }
 
-        public IEnumerable<TicTacToeCell> GetStrategiesFrom(ITicTacToePosition position)
+        public IEnumerable<TicTacToeCell> GetStrategiesFrom(TicTacToePosition position)
         {
             CheckPosition(position);
 
@@ -27,13 +27,13 @@ namespace Alligator.TicTacToe
             }
         }
 
-        public int StaticEvaluate(ITicTacToePosition position)
+        public int StaticEvaluate(TicTacToePosition position)
         {
             CheckPosition(position);
             return 0;
         }
 
-        private void CheckPosition(ITicTacToePosition position)
+        private void CheckPosition(TicTacToePosition position)
         {
             if (position == null)
             {

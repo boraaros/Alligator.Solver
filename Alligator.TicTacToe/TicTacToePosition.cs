@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Alligator.Solver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Alligator.TicTacToe
 {
-    public class TicTacToePosition : ITicTacToePosition
+    public class TicTacToePosition : IPosition<TicTacToeCell>
     {
         private ulong identifier;
         private bool isEnded;
@@ -54,6 +55,11 @@ namespace Alligator.TicTacToe
         public bool IsQuiet
         {
             get { return true; }
+        }
+
+        public IList<TicTacToeCell> History
+        {
+            get { return history; }
         }
 
         public void Do(TicTacToeCell ply)
