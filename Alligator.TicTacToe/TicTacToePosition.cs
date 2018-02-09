@@ -7,7 +7,7 @@ namespace Alligator.TicTacToe
     public class TicTacToePosition : ITicTacToePosition
     {
         private ulong identifier;
-        private bool isOver;
+        private bool isEnded;
         private bool hasWinner;
 
         private readonly TicTacToeMark[,] board;
@@ -19,7 +19,7 @@ namespace Alligator.TicTacToe
         public TicTacToePosition()
         {
             identifier = 0ul;
-            isOver = false;
+            isEnded = false;
             hasWinner = false;
 
             board = new TicTacToeMark[BoardSize, BoardSize];
@@ -41,9 +41,9 @@ namespace Alligator.TicTacToe
             get { return identifier; }
         }
 
-        public bool IsOver
+        public bool IsEnded
         {
-            get { return isOver; }
+            get { return isEnded; }
         }
 
         public bool HasWinner
@@ -62,7 +62,7 @@ namespace Alligator.TicTacToe
             {
                 throw new ArgumentNullException("ply");
             }
-            if (isOver)
+            if (isEnded)
             {
                 throw new InvalidOperationException("Cannot mark, because the game is already over");
             }
@@ -96,7 +96,7 @@ namespace Alligator.TicTacToe
             }
             board[lastPly.Row, lastPly.Column] = TicTacToeMark.Empty;
             history.RemoveAt(history.Count - 1);
-            isOver = false;
+            isEnded = false;
             hasWinner = false;
             nextMarkType = ChangeMark(nextMarkType);
             identifier = ComputeIdentifier();
@@ -137,7 +137,7 @@ namespace Alligator.TicTacToe
 
             if (IsHorizontalLine(lastPly.Row) || IsVerticalLine(lastPly.Column))
             {
-                isOver = true;
+                isEnded = true;
                 hasWinner = true;
                 return;
             }
@@ -147,13 +147,13 @@ namespace Alligator.TicTacToe
             }
             if (IsDiagonalLine() || IsReverseDiagonalLine())
             {
-                isOver = true;
+                isEnded = true;
                 hasWinner = true;
                 return;
             }
             if (!HasEmptyCell())
             {
-                isOver = true;
+                isEnded = true;
             }
         }
 
