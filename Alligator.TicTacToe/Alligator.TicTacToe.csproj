@@ -39,7 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ITicTacToePosition.cs" />
     <Compile Include="TicTacToeMark.cs" />
     <Compile Include="TicTacToeCell.cs" />
     <Compile Include="TicTacToeLogics.cs" />

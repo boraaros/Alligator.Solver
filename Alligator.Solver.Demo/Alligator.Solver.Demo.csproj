@@ -43,11 +43,16 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolverConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Alligator.Solver\Alligator.Solver.csproj">
+      <Project>{c55729c5-da81-457f-9289-2ef721b6b100}</Project>
+      <Name>Alligator.Solver</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Alligator.TicTacToe\Alligator.TicTacToe.csproj">
       <Project>{055ea5f5-1597-49ba-afb3-6ad8b2148600}</Project>
       <Name>Alligator.TicTacToe</Name>
