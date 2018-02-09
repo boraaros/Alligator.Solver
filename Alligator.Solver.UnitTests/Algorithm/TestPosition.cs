@@ -8,15 +8,15 @@ namespace Alligator.Solver.UnitTests.Algorithm
     {
         private readonly IList<TestPly> history;
 
-        private readonly Func<ulong, bool> isOver;
+        private readonly Func<ulong, bool> isEnded;
         private readonly Func<ulong, bool> hasWinner;
         private readonly Func<ulong, bool> isQuiet;
 
-        public TestPosition(Func<ulong, bool> isOver, Func<ulong, bool> hasWinner, Func<ulong, bool> isQuiet)
+        public TestPosition(Func<ulong, bool> isEnded, Func<ulong, bool> hasWinner, Func<ulong, bool> isQuiet)
         {
             history = new List<TestPly>();
 
-            this.isOver = isOver;
+            this.isEnded = isEnded;
             this.hasWinner = hasWinner;
             this.isQuiet = isQuiet;
         }
@@ -26,9 +26,9 @@ namespace Alligator.Solver.UnitTests.Algorithm
             get { return history.Aggregate(0ul, (sum, next) => sum + next.Value); }
         }
 
-        public bool IsOver
+        public bool IsEnded
         {
-            get { return isOver(Identifier); }
+            get { return isEnded(Identifier); }
         }
 
         public bool HasWinner

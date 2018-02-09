@@ -28,14 +28,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => (int)p.Identifier)
                 .Callback<TestPosition>(p => staticEvaluatedIds.Add(p.Identifier));
 
@@ -68,14 +68,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => (int)p.Identifier)
                 .Callback<TestPosition>(p => staticEvaluatedIds.Add(p.Identifier));
 
@@ -110,14 +110,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
@@ -147,14 +147,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(3, 0);
@@ -186,14 +186,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => winIds.Contains(id), (id) => winIds.Contains(id), (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(3, 0);
@@ -225,14 +225,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => winIds.Contains(id), (id) => winIds.Contains(id), (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
@@ -262,14 +262,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => 6 - (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
@@ -284,7 +284,7 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             // Assert
             Assert.AreEqual(2, result);
-            externalLogics.Verify(t => t.Evaluate(It.Is<TestPosition>(p => p.Identifier == 6ul)), Times.Never);
+            externalLogics.Verify(t => t.StaticEvaluate(It.Is<TestPosition>(p => p.Identifier == 6ul)), Times.Never);
         }
 
         [TestMethod]
@@ -300,14 +300,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => 6 - (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
@@ -342,14 +342,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => true));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => 6 - (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
@@ -385,7 +385,7 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => quietIds.Contains(id)));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
@@ -393,7 +393,7 @@ namespace Alligator.Solver.UnitTests.Algorithm
                     })
                 .Callback<TestPosition>(p => expandedIds.Add(p.Identifier));
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => 6 - (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(2, 1);
@@ -433,14 +433,14 @@ namespace Alligator.Solver.UnitTests.Algorithm
                 .Setup(t => t.CreateEmptyPosition())
                 .Returns(new TestPosition((id) => false, (id) => false, (id) => false));
             externalLogics
-                .Setup(t => t.Strategies(It.IsAny<TestPosition>()))
+                .Setup(t => t.GetStrategiesFrom(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>((p) => new List<TestPly> 
                     { 
                         new TestPly(p.Identifier + 1), 
                         new TestPly(p.Identifier + 2) 
                     });
             externalLogics
-                .Setup(t => t.Evaluate(It.IsAny<TestPosition>()))
+                .Setup(t => t.StaticEvaluate(It.IsAny<TestPosition>()))
                 .Returns<TestPosition>(p => 12 - (int)p.Identifier);
 
             var miniMaxSettings = new MiniMaxSettings(2, 2);

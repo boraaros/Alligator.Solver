@@ -23,7 +23,7 @@ namespace Demo
             IList<TicTacToeCell> history = new List<TicTacToeCell>();
             bool aiStep = true;
 
-            while (!position.IsOver)
+            while (!position.IsEnded)
             {
                 PrintPosition(position);
                 TicTacToeCell next;

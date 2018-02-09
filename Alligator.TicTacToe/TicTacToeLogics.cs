@@ -11,7 +11,7 @@ namespace Alligator.TicTacToe
             return new TicTacToePosition();
         }
 
-        public IEnumerable<TicTacToeCell> Strategies(TicTacToePosition position)
+        public IEnumerable<TicTacToeCell> GetStrategiesFrom(TicTacToePosition position)
         {
             CheckPosition(position);
 
@@ -27,7 +27,7 @@ namespace Alligator.TicTacToe
             }
         }
 
-        public int Evaluate(TicTacToePosition position)
+        public int StaticEvaluate(TicTacToePosition position)
         {
             CheckPosition(position);
             return 0;
@@ -39,7 +39,7 @@ namespace Alligator.TicTacToe
             {
                 throw new ArgumentNullException("position");
             }
-            if (position.IsOver)
+            if (position.IsEnded)
             {
                 throw new InvalidOperationException(string.Format("Cannot evaluate a closed position"));
             }

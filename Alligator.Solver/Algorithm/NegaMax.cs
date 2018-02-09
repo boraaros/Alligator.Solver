@@ -147,7 +147,7 @@ namespace Alligator.Solver.Algorithm
 
         private IEnumerable<TPly> OrderedStrategies(TPosition position, int depth)
         {
-            var plies = externalLogics.Strategies(position).ToList();
+            var plies = externalLogics.GetStrategiesFrom(position).ToList();
             Transposition<TPly> transposition;
             if (cacheTables.TryGetTransposition(position, out transposition))
             {
@@ -177,7 +177,7 @@ namespace Alligator.Solver.Algorithm
 
         private bool IsLeaf(TPosition position, int depth)
         {
-            if (position.IsOver)
+            if (position.IsEnded)
             {
                 return true;
             }
@@ -191,12 +191,12 @@ namespace Alligator.Solver.Algorithm
         private int HeuristicValue(TPosition position, int depth)
         {
             int distanceFromRoot = miniMaxSettings.MaxDepth - depth;
-            if (!position.IsOver)
+            if (!position.IsEnded)
             {
                 int value;
                 if (!cacheTables.TryGetValue(position, out value))
                 {
-                    value = externalLogics.Evaluate(position);
+                    value = externalLogics.StaticEvaluate(position);
                     CheckEvaluationValue(value);
                     cacheTables.AddValue(position, value);
                 }

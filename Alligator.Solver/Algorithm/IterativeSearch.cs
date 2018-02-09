@@ -52,7 +52,7 @@ namespace Alligator.Solver.Algorithm
             }
 
             TPosition position = CreateFromHistory(history);
-            if (position.IsOver)
+            if (position.IsEnded)
             {
                 throw new InvalidOperationException("The game is already over");
             }
@@ -88,7 +88,7 @@ namespace Alligator.Solver.Algorithm
                     {
                         p.Do(ply);
                     }
-                    if (p.IsOver)
+                    if (p.IsEnded)
                     {
                         break;
                     }
