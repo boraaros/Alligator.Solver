@@ -45,6 +45,8 @@
     <Compile Include="Caches\ICacheTables.cs" />
     <Compile Include="Caches\IHashTable.cs" />
     <Compile Include="Caches\Transposition.cs" />
+    <Compile Include="Heuristics\HeuristicTables.cs" />
+    <Compile Include="Heuristics\IHeuristicTables.cs" />
     <Compile Include="IExternalLogics.cs" />
     <Compile Include="IPosition.cs" />
     <Compile Include="ISolver.cs" />
