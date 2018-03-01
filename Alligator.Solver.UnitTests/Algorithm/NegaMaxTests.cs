@@ -1,5 +1,4 @@
-﻿using Alligator;
-using Alligator.Solver.Algorithm;
+﻿using Alligator.Solver.Algorithm;
 using Alligator.Solver.Caches;
 using Alligator.Solver.Heuristics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,10 +10,10 @@ using System.Collections.Generic;
 namespace Alligator.Solver.UnitTests.Algorithm
 {
     [TestClass]
-    public class NegaMaxTests
+    public class NegaScoutTests
     {
         [TestMethod]
-        public void Negamax_does_not_call_static_evaluation_for_intermediate_nodes()
+        public void Negascout_does_not_call_static_evaluation_for_intermediate_nodes()
         {
             // Arrange
             var staticEvaluatedIds = new List<ulong>();
@@ -41,20 +40,20 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.IsTrue(staticEvaluatedIds.All(t => t > 2));
         }
 
         [TestMethod]
-        public void Negamax_calls_static_evaluation_for_all_leaf_nodes_without_cut_off()
+        public void Negascout_calls_static_evaluation_for_all_leaf_nodes_without_cut_off()
         {
             // Arrange
             var staticEvaluatedIds = new List<ulong>();
@@ -81,16 +80,15 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
-            Assert.AreEqual(4, staticEvaluatedIds.Count);
             Assert.IsTrue(staticEvaluatedIds.Contains(3ul));
             Assert.IsTrue(staticEvaluatedIds.Contains(4ul));
             Assert.IsTrue(staticEvaluatedIds.Contains(5ul));
@@ -98,7 +96,7 @@ namespace Alligator.Solver.UnitTests.Algorithm
         }
 
         [TestMethod]
-        public void Negamax_finds_the_optimum_if_opponent_moves_finally()
+        public void Negascout_finds_the_optimum_if_opponent_moves_finally()
         {
             // Arrange
             var cacheTables = new Mock<ICacheTables<TestPosition, TestPly>>(MockBehavior.Loose);
@@ -122,20 +120,20 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.AreEqual(5, result);
         }
 
         [TestMethod]
-        public void Negamax_finds_the_optimum_if_itself_moves_finally()
+        public void Negascout_finds_the_optimum_if_itself_moves_finally()
         {
             // Arrange
             var cacheTables = new Mock<ICacheTables<TestPosition, TestPly>>(MockBehavior.Loose);
@@ -159,20 +157,20 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(3, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.AreEqual(12, result);
         }
 
         [TestMethod]
-        public void Negamax_recognizes_winnable_positions()
+        public void Negascout_recognizes_winnable_positions()
         {
             // Arrange
             var winIds = new List<ulong> { 12ul, 13ul };
@@ -198,20 +196,20 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(3, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => winIds.Contains(id), (id) => winIds.Contains(id), (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.AreEqual(int.MaxValue - miniMaxSettings.MaxDepth, result);
         }
 
         [TestMethod]
-        public void Negamax_recognizes_losing_positions()
+        public void Negascout_recognizes_losing_positions()
         {
             // Arrange
             var winIds = new List<ulong> { 4ul, 5ul };
@@ -237,20 +235,20 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => winIds.Contains(id), (id) => winIds.Contains(id), (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.AreEqual(-int.MaxValue + miniMaxSettings.MaxDepth, result);
         }
 
         [TestMethod]
-        public void Negamax_finds_beta_cutoff_and_prunes_the_search_tree()
+        public void Negascout_finds_beta_cutoff_and_prunes_the_search_tree()
         {
             // Arrange
             var cacheTables = new Mock<ICacheTables<TestPosition, TestPly>>(MockBehavior.Loose);
@@ -274,13 +272,13 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.AreEqual(2, result);
@@ -288,7 +286,7 @@ namespace Alligator.Solver.UnitTests.Algorithm
         }
 
         [TestMethod]
-        public void Negamax_means_beta_cutoff_to_heuristic_tables()
+        public void Negascout_means_beta_cutoff_to_heuristic_tables()
         {
             // Arrange
             var cacheTables = new Mock<ICacheTables<TestPosition, TestPly>>(MockBehavior.Loose);
@@ -312,20 +310,20 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             heuristicTables.Verify(t => t.StoreBetaCutOff(It.Is<TestPly>(p => p.Value == 3ul), 1), Times.Once);
         }
 
         [TestMethod]
-        public void Negamax_add_transpositions_to_cache()
+        public void Negascout_add_transpositions_to_cache()
         {
             // Arrange
             var idsToCache = new List<ulong>();
@@ -354,13 +352,13 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 0);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => true);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.AreEqual(3, idsToCache.Count);
@@ -370,7 +368,7 @@ namespace Alligator.Solver.UnitTests.Algorithm
         }
 
         [TestMethod]
-        public void Negamax_quiescence_extension_called_if_leaf_is_not_quiet()
+        public void Negascout_quiescence_extension_called_if_leaf_is_not_quiet()
         {
             // Arrange
             var quietIds = new List<ulong> { 3ul, 5ul, 6ul };
@@ -398,13 +396,13 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 1);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => quietIds.Contains(id));
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.IsFalse(expandedIds.Contains(3ul));
@@ -416,7 +414,7 @@ namespace Alligator.Solver.UnitTests.Algorithm
         }
 
         [TestMethod]
-        public void Negamax_does_not_store_transpositions_during_quiescence_extension()
+        public void Negascout_does_not_store_transpositions_during_quiescence_extension()
         {
             // Arrange
             var idsToCache = new List<ulong>();
@@ -445,13 +443,13 @@ namespace Alligator.Solver.UnitTests.Algorithm
 
             var miniMaxSettings = new MiniMaxSettings(2, 2);
 
-            var negaMax = new NegaMax<TestPosition, TestPly>(
+            var negaScout = new NegaScout<TestPosition, TestPly>(
                 externalLogics.Object, cacheTables.Object, heuristicTables.Object, miniMaxSettings);
 
             var position = new TestPosition((id) => false, (id) => false, (id) => false);
 
             // Act
-            var result = negaMax.Search(position);
+            var result = negaScout.Search(position);
 
             // Assert
             Assert.IsTrue(idsToCache.All(id => id <= 6));

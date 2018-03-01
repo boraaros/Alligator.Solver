@@ -72,7 +72,7 @@ namespace Alligator.Solver.Algorithm
                 while (!stop && searchDepthLimit++ <= solverConfiguration.SearchDepthLimit)
                 {
                     var settings = new MiniMaxSettings(searchDepthLimit, solverConfiguration.QuiescenceExtensionLimit);
-                    miniMax = new NegaMax<TPosition, TPly>(externalLogics, cacheTables, heuristicTables, settings);
+                    miniMax = new NegaScout<TPosition, TPly>(externalLogics, cacheTables, heuristicTables, settings);
                     TPosition position = CreateFromHistory(history);
                     var nextSolution = miniMax.Search(position);
                     if (!stop)

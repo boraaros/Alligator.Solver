@@ -42,7 +42,7 @@
     <Compile Include="Algorithm\IMiniMax.cs" />
     <Compile Include="Algorithm\IterativeSearch.cs" />
     <Compile Include="Algorithm\MiniMaxSettings.cs" />
-    <Compile Include="Algorithm\NegaMax.cs" />
+    <Compile Include="Algorithm\NegaScout.cs" />
     <Compile Include="Caches\CacheTables.cs" />
     <Compile Include="Caches\EvaluationMode.cs" />
     <Compile Include="Caches\HashTable.cs" />
