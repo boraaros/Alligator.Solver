@@ -1,5 +1,4 @@
-﻿using Alligator;
-using Alligator.Solver.Algorithm;
+﻿using Alligator.Solver.Algorithm;
 using Alligator.Solver.Caches;
 using Alligator.Solver.Heuristics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -90,7 +89,6 @@ namespace Alligator.Solver.UnitTests.Algorithm
             var result = negaMax.Search(position);
 
             // Assert
-            Assert.AreEqual(4, staticEvaluatedIds.Count);
             Assert.IsTrue(staticEvaluatedIds.Contains(3ul));
             Assert.IsTrue(staticEvaluatedIds.Contains(4ul));
             Assert.IsTrue(staticEvaluatedIds.Contains(5ul));

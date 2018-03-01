@@ -79,10 +79,24 @@ namespace Alligator.Solver.Algorithm
             }
             int bestValue = int.MinValue;
             TPly bestPly = default(TPly);
+            bool isFirst = true;
             foreach (var ply in OrderedStrategies(position, depth))
             {
                 position.Do(ply);
-                int value = -SearchRecursively(position, depth - 1, -beta, -alpha);
+                int value = 0;
+                if (isFirst)
+                {
+                    value = -SearchRecursively(position, depth - 1, -beta, -alpha);
+                    isFirst = false;
+                }
+                else
+                {
+                    value = -SearchRecursively(position, depth - 1, -alpha - 1, -alpha);
+                    if (alpha < value && value < beta)
+                    {
+                        value = -SearchRecursively(position, depth - 1, -beta, -value);
+                    }
+                }
                 position.Undo();
 
                 if (isStopRequested)
