@@ -10,8 +10,9 @@ namespace Alligator.Solver
     {
         private readonly IExternalLogics<TPosition, TPly> externalLogics;
         private readonly ISolverConfiguration solverConfiguration;
+        private readonly Action<string> logger;
 
-        public SolverFactory(IExternalLogics<TPosition, TPly> externalLogics, ISolverConfiguration solverConfiguration)
+        public SolverFactory(IExternalLogics<TPosition, TPly> externalLogics, ISolverConfiguration solverConfiguration, Action<string> logger)
         {
             if (externalLogics == null)
             {
@@ -21,8 +22,18 @@ namespace Alligator.Solver
             {
                 throw new ArgumentNullException("solverConfiguration");
             }
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
             this.externalLogics = externalLogics;
             this.solverConfiguration = solverConfiguration;
+            this.logger = logger;
+        }
+
+        public SolverFactory(IExternalLogics<TPosition, TPly> externalLogics, ISolverConfiguration solverConfiguration)
+            : this(externalLogics, solverConfiguration, (message) => { })
+        {
         }
 
         public ISolver<TPly> Create()
@@ -31,7 +42,8 @@ namespace Alligator.Solver
                 externalLogics,
                 new CacheTables<TPosition, TPly>(solverConfiguration),
                 new HeuristicTables<TPly>(),
-                solverConfiguration);
+                solverConfiguration,
+                logger);
 
             return solver;
         }

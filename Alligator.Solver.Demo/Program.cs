@@ -16,7 +16,7 @@ namespace Demo
 
             var externalLogics = new TicTacToeLogics();
             var solverConfiguration = new SolverConfiguration();
-            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration, SolverLog);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             TicTacToePosition position = new TicTacToePosition();
@@ -157,6 +157,14 @@ namespace Demo
                 Console.WriteLine();
             }
             Console.WriteLine(string.Join("-", Enumerable.Range(0, TicTacToePosition.BoardSize + 1).Select(t => "-")));
+        }
+
+        private static void SolverLog(string message)
+        {
+            var prevColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(string.Format("[SolverLog] {0}", message));
+            Console.ForegroundColor = prevColor;
         }
     }
 }

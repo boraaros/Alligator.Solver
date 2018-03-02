@@ -13,6 +13,7 @@ namespace Alligator.Solver.Algorithm
         private readonly IHeuristicTables<TPly> heuristicTables;
         private readonly ICacheTables<TPosition, TPly> cacheTables;
         private readonly ISolverConfiguration solverConfiguration;
+        private readonly Action<string> logger;
 
         private readonly object lockObj = new object();
 
@@ -20,7 +21,8 @@ namespace Alligator.Solver.Algorithm
             IExternalLogics<TPosition, TPly> externalLogics,
             ICacheTables<TPosition, TPly> cacheTables,
             IHeuristicTables<TPly> heuristicTables,
-            ISolverConfiguration solverConfiguration)
+            ISolverConfiguration solverConfiguration,
+            Action<string> logger)
         {
             if (externalLogics == null)
             {
@@ -38,10 +40,15 @@ namespace Alligator.Solver.Algorithm
             {
                 throw new ArgumentNullException("solverConfiguration");
             }
+            if (logger == null)
+            {
+                throw new ArgumentNullException("logger");
+            }
             this.externalLogics = externalLogics;
             this.cacheTables = cacheTables;
             this.heuristicTables = heuristicTables;
             this.solverConfiguration = solverConfiguration;
+            this.logger = logger;
         }
 
         public int Maximize(IList<TPly> history, out IList<TPly> forecast)
@@ -62,6 +69,8 @@ namespace Alligator.Solver.Algorithm
 
         private int Run(IList<TPly> history, out IList<TPly> principalVariation)
         {
+            logger("Iterative search has started");
+
             bool stop = false;
             IMiniMax<TPosition> miniMax = null;
             int solution = 0;
@@ -74,6 +83,7 @@ namespace Alligator.Solver.Algorithm
                     var settings = new MiniMaxSettings(searchDepthLimit, solverConfiguration.QuiescenceExtensionLimit);
                     miniMax = new NegaScout<TPosition, TPly>(externalLogics, cacheTables, heuristicTables, settings);
                     TPosition position = CreateFromHistory(history);
+                    var start = DateTime.Now;
                     var nextSolution = miniMax.Search(position);
                     if (!stop)
                     {
@@ -82,6 +92,9 @@ namespace Alligator.Solver.Algorithm
                             solution = nextSolution;
                         }
                         forecast = RevealPrincipalVariation(history);
+
+                        logger(string.Format("#{0} | {1} ms | {2} | {3}", 
+                            searchDepthLimit, (long)((DateTime.Now - start).TotalMilliseconds), solution, string.Join(" > ", forecast)));
                     }
                     var p = CreateFromHistory(history);
                     foreach (var ply in forecast)
