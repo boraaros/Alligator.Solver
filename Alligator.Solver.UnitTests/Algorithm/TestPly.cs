@@ -2,7 +2,7 @@
 
 namespace Alligator.Solver.UnitTests.Algorithm
 {
-    class TestPly
+    internal class TestPly
     {
         public readonly ulong Value;
 

@@ -2,7 +2,7 @@
 
 namespace Alligator.Solver.Caches
 {
-    class CacheTables<TPosition, TPly> : ICacheTables<TPosition, TPly>
+    internal class CacheTables<TPosition, TPly> : ICacheTables<TPosition, TPly>
         where TPosition : IPosition<TPly>
     {
         private readonly IHashTable<ulong, int> evaluationTable;

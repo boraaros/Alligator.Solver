@@ -6,7 +6,7 @@ using Alligator.Solver.Heuristics;
 
 namespace Alligator.Solver.Algorithm
 {
-    class NegaScout<TPosition, TPly> : IMiniMax<TPosition>
+    internal class NegaScout<TPosition, TPly> : IMiniMax<TPosition>
         where TPosition : IPosition<TPly>
     {
         private readonly IExternalLogics<TPosition, TPly> externalLogics;
@@ -22,32 +22,21 @@ namespace Alligator.Solver.Algorithm
             IHeuristicTables<TPly> heuristicTables,
             MiniMaxSettings miniMaxSettings)
         {
-            if (externalLogics == null)
-            {
-                throw new ArgumentNullException("externalLogics");
-            }
-            if (cacheTables == null)
-            {
-                throw new ArgumentNullException("cacheTables");
-            }
-            if (heuristicTables == null)
-            {
-                throw new ArgumentNullException("heuristicTables");
-            }
-            if (miniMaxSettings == null)
-            {
-                throw new ArgumentNullException("miniMaxSettings");
-            }
-            this.externalLogics = externalLogics;
-            this.cacheTables = cacheTables;
-            this.heuristicTables = heuristicTables;
-            this.miniMaxSettings = miniMaxSettings;
+            this.externalLogics = externalLogics ?? throw new ArgumentNullException(nameof(externalLogics));
+            this.cacheTables = cacheTables ?? throw new ArgumentNullException(nameof(cacheTables));
+            this.heuristicTables = heuristicTables ?? throw new ArgumentNullException(nameof(heuristicTables));
+            this.miniMaxSettings = miniMaxSettings ?? throw new ArgumentNullException(nameof(miniMaxSettings));
+        }
+
+        public int Search(TPosition position, int initialAlpha, int initialBeta)
+        {
+            isStopRequested = false;
+            return SearchRecursively(position, miniMaxSettings.MaxDepth, initialAlpha, initialBeta);
         }
 
         public int Search(TPosition position)
         {
-            isStopRequested = false;
-            return SearchRecursively(position, miniMaxSettings.MaxDepth, -int.MaxValue, int.MaxValue);
+            return Search(position, -int.MaxValue, int.MaxValue);
         }
 
         private int SearchRecursively(TPosition position, int depth, int alpha, int beta)
@@ -137,7 +126,7 @@ namespace Alligator.Solver.Algorithm
 
         private void HandleBetaCutOff(TPly ply, int depth)
         {
-            if (!IsQuiescenceExtension(depth))
+            if (!isStopRequested && !IsQuiescenceExtension(depth))
             {
                 heuristicTables.StoreBetaCutOff(ply, depth);
             }

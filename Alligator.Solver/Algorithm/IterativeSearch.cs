@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Alligator.Solver.Algorithm
 {
-    class IterativeSearch<TPosition, TPly> : ISolver<TPly>
+    internal class IterativeSearch<TPosition, TPly> : ISolver<TPly>
         where TPosition : IPosition<TPly>
     {
         private readonly IExternalLogics<TPosition, TPly> externalLogics;
@@ -14,6 +14,8 @@ namespace Alligator.Solver.Algorithm
         private readonly ICacheTables<TPosition, TPly> cacheTables;
         private readonly ISolverConfiguration solverConfiguration;
         private readonly Action<string> logger;
+
+        private bool isStopRequested;
 
         private readonly object lockObj = new object();
 
@@ -24,31 +26,11 @@ namespace Alligator.Solver.Algorithm
             ISolverConfiguration solverConfiguration,
             Action<string> logger)
         {
-            if (externalLogics == null)
-            {
-                throw new ArgumentNullException("externalLogics");
-            }
-            if (cacheTables == null)
-            {
-                throw new ArgumentNullException("cacheTables");
-            }
-            if (heuristicTables == null)
-            {
-                throw new ArgumentNullException("heuristicTables");
-            }
-            if (solverConfiguration == null)
-            {
-                throw new ArgumentNullException("solverConfiguration");
-            }
-            if (logger == null)
-            {
-                throw new ArgumentNullException("logger");
-            }
-            this.externalLogics = externalLogics;
-            this.cacheTables = cacheTables;
-            this.heuristicTables = heuristicTables;
-            this.solverConfiguration = solverConfiguration;
-            this.logger = logger;
+            this.externalLogics = externalLogics ?? throw new ArgumentNullException(nameof(externalLogics));
+            this.cacheTables = cacheTables ?? throw new ArgumentNullException(nameof(cacheTables));
+            this.heuristicTables = heuristicTables ?? throw new ArgumentNullException(nameof(heuristicTables));
+            this.solverConfiguration = solverConfiguration ?? throw new ArgumentNullException(nameof(solverConfiguration));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public int Maximize(IList<TPly> history, out IList<TPly> forecast)
@@ -71,21 +53,29 @@ namespace Alligator.Solver.Algorithm
         {
             logger("Iterative search has started");
 
-            bool stop = false;
+            isStopRequested = false;
             IMiniMax<TPosition> miniMax = null;
             int solution = 0;
             IList<TPly> forecast = new List<TPly>();
             var task = Task.Factory.StartNew(() =>
             {
                 int searchDepthLimit = 0;
-                while (!stop && searchDepthLimit++ <= solverConfiguration.SearchDepthLimit)
+                while (!isStopRequested && searchDepthLimit++ <= solverConfiguration.SearchDepthLimit)
                 {
                     var settings = new MiniMaxSettings(searchDepthLimit, solverConfiguration.QuiescenceExtensionLimit);
                     miniMax = new NegaScout<TPosition, TPly>(externalLogics, cacheTables, heuristicTables, settings);
                     TPosition position = CreateFromHistory(history);
                     var start = DateTime.Now;
-                    var nextSolution = miniMax.Search(position);
-                    if (!stop)
+                    int nextSolution;
+                    if (searchDepthLimit <= 4)
+                    {
+                        nextSolution = SimpleSearch(miniMax, position, -int.MaxValue, int.MaxValue);
+                    }
+                    else
+                    {
+                        nextSolution = AspirationSearch(miniMax, position, solution);
+                    }
+                    if (!isStopRequested)
                     {
                         lock (lockObj)
                         {
@@ -110,9 +100,42 @@ namespace Alligator.Solver.Algorithm
 
             task.Wait(solverConfiguration.TimeLimitPerMove);
             principalVariation = forecast;
-            stop = true;
+            isStopRequested = true;
             miniMax.Stop();
             return solution;
+        }
+
+        private int SimpleSearch(IMiniMax<TPosition> miniMax, TPosition position, int alpha, int beta)
+        {
+            return miniMax.Search(position, alpha, beta);
+        }
+
+        private int AspirationSearch(IMiniMax<TPosition> miniMax, TPosition position, int estimatedValue)
+        {
+            int delta = solverConfiguration.AspirationSearchDelta;
+            int alpha = SubtractSafe(estimatedValue, delta);
+            int beta = AddSafe(estimatedValue, delta);
+
+            while (!isStopRequested)
+            {
+                delta = AddSafe(delta, delta);
+                int value = SimpleSearch(miniMax, position, alpha, beta);
+                if (value <= alpha)
+                {
+                    beta = (alpha + beta) / 2;
+                    alpha = SubtractSafe(estimatedValue, delta);                        
+                }
+                else if (value >= beta)
+                {
+                    alpha = (alpha + beta) / 2;
+                    beta = AddSafe(estimatedValue, delta);
+                }
+                else
+                {
+                    return value;
+                }
+            }
+            return 0;
         }
 
         private TPosition CreateFromHistory(IList<TPly> history)
@@ -136,6 +159,24 @@ namespace Alligator.Solver.Algorithm
                 current.Do(transposition.BestStrategy);
             }
             return principalVariation;
+        }
+
+        private int AddSafe(int x, int y)
+        {
+            if (x < int.MaxValue - y)
+            {
+                return x + y;
+            }
+            return int.MaxValue;
+        }
+
+        private int SubtractSafe(int x, int y)
+        {
+            if (x > -int.MaxValue + y)
+            {
+                return x - y;
+            }
+            return int.MinValue;
         }
     }
 }

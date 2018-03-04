@@ -2,7 +2,7 @@
 
 namespace Alligator.Solver.Algorithm
 {
-    class MiniMaxSettings
+    internal class MiniMaxSettings
     {
         public readonly int MaxDepth;
         public readonly int MaxQuiescenceDepth;

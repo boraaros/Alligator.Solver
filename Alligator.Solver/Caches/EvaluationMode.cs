@@ -2,7 +2,7 @@
 
 namespace Alligator.Solver.Caches
 {
-    enum EvaluationMode
+    internal enum EvaluationMode
     {
         ExactValue,
         LowerBound,

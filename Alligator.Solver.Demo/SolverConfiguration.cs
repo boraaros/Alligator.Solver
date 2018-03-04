@@ -2,7 +2,7 @@
 
 namespace Alligator.Solver.Demo
 {
-    class SolverConfiguration : ISolverConfiguration
+    internal class SolverConfiguration : ISolverConfiguration
     {
         public TimeSpan TimeLimitPerMove
         {
@@ -38,5 +38,7 @@ namespace Alligator.Solver.Demo
         {
             get { return 0; }
         }
+
+        public int AspirationSearchDelta => 1;
     }
 }

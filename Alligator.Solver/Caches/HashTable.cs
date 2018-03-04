@@ -34,13 +34,10 @@ namespace Alligator.Solver.Caches
             {
                 throw new ArgumentOutOfRangeException("retryLimit", retryLimit, "Value must be non-negative");
             }
-            if (isReplaceable == null)
-            {
-                throw new ArgumentNullException("isReplaceable");
-            }
+
             table = new Entry[length];
             this.retryLimit = retryLimit;
-            IsReplaceable = isReplaceable;
+            IsReplaceable = isReplaceable ?? throw new ArgumentNullException("isReplaceable");
         }
 
         public bool TryAdd(ulong key, TValue value)

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Alligator.Solver.UnitTests.Algorithm
 {
-    class TestPosition : IPosition<TestPly>
+    internal class TestPosition : IPosition<TestPly>
     {
         private readonly IList<TestPly> history;
 
