@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Alligator.Solver.Algorithm
 {
-    class IterativeSearch<TPosition, TPly> : ISolver<TPly>
+    internal class IterativeSearch<TPosition, TPly> : ISolver<TPly>
         where TPosition : IPosition<TPly>
     {
         private readonly IExternalLogics<TPosition, TPly> externalLogics;
@@ -24,31 +24,11 @@ namespace Alligator.Solver.Algorithm
             ISolverConfiguration solverConfiguration,
             Action<string> logger)
         {
-            if (externalLogics == null)
-            {
-                throw new ArgumentNullException("externalLogics");
-            }
-            if (cacheTables == null)
-            {
-                throw new ArgumentNullException("cacheTables");
-            }
-            if (heuristicTables == null)
-            {
-                throw new ArgumentNullException("heuristicTables");
-            }
-            if (solverConfiguration == null)
-            {
-                throw new ArgumentNullException("solverConfiguration");
-            }
-            if (logger == null)
-            {
-                throw new ArgumentNullException("logger");
-            }
-            this.externalLogics = externalLogics;
-            this.cacheTables = cacheTables;
-            this.heuristicTables = heuristicTables;
-            this.solverConfiguration = solverConfiguration;
-            this.logger = logger;
+            this.externalLogics = externalLogics ?? throw new ArgumentNullException(nameof(externalLogics));
+            this.cacheTables = cacheTables ?? throw new ArgumentNullException(nameof(cacheTables));
+            this.heuristicTables = heuristicTables ?? throw new ArgumentNullException(nameof(heuristicTables));
+            this.solverConfiguration = solverConfiguration ?? throw new ArgumentNullException(nameof(solverConfiguration));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public int Maximize(IList<TPly> history, out IList<TPly> forecast)
@@ -71,21 +51,29 @@ namespace Alligator.Solver.Algorithm
         {
             logger("Iterative search has started");
 
-            bool stop = false;
+            var isStopRequested = false;
             IMiniMax<TPosition> miniMax = null;
             int solution = 0;
             IList<TPly> forecast = new List<TPly>();
             var task = Task.Factory.StartNew(() =>
             {
                 int searchDepthLimit = 0;
-                while (!stop && searchDepthLimit++ <= solverConfiguration.SearchDepthLimit)
+                while (!isStopRequested && searchDepthLimit++ <= solverConfiguration.SearchDepthLimit)
                 {
                     var settings = new MiniMaxSettings(searchDepthLimit, solverConfiguration.QuiescenceExtensionLimit);
                     miniMax = new NegaScout<TPosition, TPly>(externalLogics, cacheTables, heuristicTables, settings);
                     TPosition position = CreateFromHistory(history);
                     var start = DateTime.Now;
-                    var nextSolution = miniMax.Search(position);
-                    if (!stop)
+                    int nextSolution;
+                    if (searchDepthLimit < solverConfiguration.MinimumSearchDepthToUseMtdf)
+                    {
+                        nextSolution = SimpleSearch(miniMax, position, -int.MaxValue, int.MaxValue);
+                    }
+                    else
+                    {
+                        nextSolution = MtdfSearch(miniMax, position, solution);
+                    }
+                    if (!isStopRequested)
                     {
                         lock (lockObj)
                         {
@@ -110,9 +98,37 @@ namespace Alligator.Solver.Algorithm
 
             task.Wait(solverConfiguration.TimeLimitPerMove);
             principalVariation = forecast;
-            stop = true;
+            isStopRequested = true;
             miniMax.Stop();
             return solution;
+        }
+
+        private int SimpleSearch(IMiniMax<TPosition> miniMax, TPosition position, int alpha, int beta)
+        {
+            return miniMax.Search(position, alpha, beta);
+        }
+
+        private int MtdfSearch(IMiniMax<TPosition> miniMax, TPosition position, int estimatedValue)
+        {
+            var value = estimatedValue;
+
+            var upperBound = int.MaxValue;
+            var lowerBound = -int.MaxValue;
+
+            while (lowerBound < upperBound)
+            {
+                var beta = Math.Max(value, lowerBound + 1);
+                value = SimpleSearch(miniMax, position, beta - 1, beta);
+                if (value < beta)
+                {
+                    upperBound = value;
+                }
+                else
+                {
+                    lowerBound = value;
+                }   
+            }
+            return value;
         }
 
         private TPosition CreateFromHistory(IList<TPly> history)

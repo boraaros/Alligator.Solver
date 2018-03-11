@@ -4,17 +4,15 @@ namespace Alligator.Solver.Caches
 {
     public class HashTable<TValue> : IHashTable<ulong, TValue>
     {
-        private struct Entry
+        private class Entry
         {
             public ulong Key;
             public TValue Value;
-            public bool Filled;
 
             public Entry(ulong key, TValue value)
             {
                 Key = key;
                 Value = value;
-                Filled = true;
             }
         }
 
@@ -34,13 +32,10 @@ namespace Alligator.Solver.Caches
             {
                 throw new ArgumentOutOfRangeException("retryLimit", retryLimit, "Value must be non-negative");
             }
-            if (isReplaceable == null)
-            {
-                throw new ArgumentNullException("isReplaceable");
-            }
+
             table = new Entry[length];
             this.retryLimit = retryLimit;
-            IsReplaceable = isReplaceable;
+            IsReplaceable = isReplaceable ?? throw new ArgumentNullException("isReplaceable");
         }
 
         public bool TryAdd(ulong key, TValue value)
@@ -51,7 +46,7 @@ namespace Alligator.Solver.Caches
                 int index = i & (table.Length - 1);
                 var item = table[index];
 
-                if (!item.Filled || IsReplaceable(item.Value, value))
+                if (item == null || IsReplaceable(item.Value, value))
                 {
                     table[index] = new Entry(key, value);
                     return true;
@@ -69,7 +64,7 @@ namespace Alligator.Solver.Caches
                 int index = i & (table.Length - 1);
                 var item = table[index];
 
-                if (!item.Filled)
+                if (item == null)
                 {
                     break;
                 }

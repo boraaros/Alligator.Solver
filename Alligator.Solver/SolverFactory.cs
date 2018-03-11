@@ -14,21 +14,9 @@ namespace Alligator.Solver
 
         public SolverFactory(IExternalLogics<TPosition, TPly> externalLogics, ISolverConfiguration solverConfiguration, Action<string> logger)
         {
-            if (externalLogics == null)
-            {
-                throw new ArgumentNullException("externalLogics");
-            }
-            if (solverConfiguration == null)
-            {
-                throw new ArgumentNullException("solverConfiguration");
-            }
-            if (logger == null)
-            {
-                throw new ArgumentNullException("logger");
-            }
-            this.externalLogics = externalLogics;
-            this.solverConfiguration = solverConfiguration;
-            this.logger = logger;
+            this.externalLogics = externalLogics ?? throw new ArgumentNullException("externalLogics");
+            this.solverConfiguration = solverConfiguration ?? throw new ArgumentNullException("solverConfiguration");
+            this.logger = logger ?? throw new ArgumentNullException("logger");
         }
 
         public SolverFactory(IExternalLogics<TPosition, TPly> externalLogics, ISolverConfiguration solverConfiguration)

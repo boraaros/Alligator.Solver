@@ -162,6 +162,9 @@ namespace Alligator.Solver.UnitTests
             solverConfiguration
                 .Setup(t => t.TranspositionTableRetryLimit)
                 .Returns(0);
+            solverConfiguration
+                .Setup(t => t.MinimumSearchDepthToUseMtdf)
+                .Returns(4);
 
             return solverConfiguration.Object;
         }

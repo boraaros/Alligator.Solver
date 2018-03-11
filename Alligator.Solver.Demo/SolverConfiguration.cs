@@ -2,7 +2,7 @@
 
 namespace Alligator.Solver.Demo
 {
-    class SolverConfiguration : ISolverConfiguration
+    internal class SolverConfiguration : ISolverConfiguration
     {
         public TimeSpan TimeLimitPerMove
         {
@@ -37,6 +37,11 @@ namespace Alligator.Solver.Demo
         public int TranspositionTableRetryLimit
         {
             get { return 0; }
+        }
+
+        public int MinimumSearchDepthToUseMtdf
+        {
+            get { return 4; }
         }
     }
 }

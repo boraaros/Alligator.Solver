@@ -2,7 +2,7 @@
 
 namespace Alligator.Solver.Caches
 {
-    interface ICacheTables<TPosition, TPly>
+    internal interface ICacheTables<TPosition, TPly>
     {
         void AddValue(TPosition position, int value);
         bool TryGetValue(TPosition position, out int value);

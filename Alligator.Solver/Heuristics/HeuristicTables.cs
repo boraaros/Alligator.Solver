@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Alligator.Solver.Heuristics
 {
-    class HeuristicTables<TPly> : IHeuristicTables<TPly>
+    internal class HeuristicTables<TPly> : IHeuristicTables<TPly>
     {
         private readonly IDictionary<int, IList<TPly>> killerPlies;
         private readonly IDictionary<TPly, int> historyScores;

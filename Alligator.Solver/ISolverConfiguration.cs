@@ -11,5 +11,6 @@ namespace Alligator.Solver
         int EvaluationTableRetryLimit { get; }
         int TranspositionTableSizeExponent { get; }
         int TranspositionTableRetryLimit { get; }
+        int MinimumSearchDepthToUseMtdf { get; }
     }
 }
