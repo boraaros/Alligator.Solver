@@ -1,7 +1,7 @@
 # Alligator.Solver
 The abstract core library of artificial intelligence for different two-player zero-sum games.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/vm0rtqw2nk1pcv0p?svg=true)](https://ci.appveyor.com/project/boraaros/alligator-solver)
+[![Build status](https://ci.appveyor.com/api/projects/status/vm0rtqw2nk1pcv0p/branch/master?svg=true)](https://ci.appveyor.com/project/boraaros/alligator-solver)
 [![NuGet](https://img.shields.io/nuget/v/Alligator.Solver.svg)](https://www.nuget.org/packages/Alligator.Solver)
 [![NuGet](https://img.shields.io/nuget/dt/Alligator.Solver.svg)](https://github.com/boraaros/Alligator.Solver)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/boraaros/Alligator.Solver/blob/master/LICENSE)
