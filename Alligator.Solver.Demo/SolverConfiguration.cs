@@ -39,6 +39,9 @@ namespace Alligator.Solver.Demo
             get { return 0; }
         }
 
-        public int AspirationSearchDelta => 1;
+        public int MinimumSearchDepthToUseMtdf
+        {
+            get { return 4; }
+        }
     }
 }

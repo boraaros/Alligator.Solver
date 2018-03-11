@@ -8,13 +8,11 @@ namespace Alligator.Solver.Caches
         {
             public ulong Key;
             public TValue Value;
-            public bool Filled;
 
             public Entry(ulong key, TValue value)
             {
                 Key = key;
                 Value = value;
-                Filled = true;
             }
         }
 

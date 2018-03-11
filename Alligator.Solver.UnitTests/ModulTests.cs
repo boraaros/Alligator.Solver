@@ -163,8 +163,8 @@ namespace Alligator.Solver.UnitTests
                 .Setup(t => t.TranspositionTableRetryLimit)
                 .Returns(0);
             solverConfiguration
-                .Setup(t => t.AspirationSearchDelta)
-                .Returns(1);
+                .Setup(t => t.MinimumSearchDepthToUseMtdf)
+                .Returns(4);
 
             return solverConfiguration.Object;
         }

@@ -15,8 +15,6 @@ namespace Alligator.Solver.Algorithm
         private readonly ISolverConfiguration solverConfiguration;
         private readonly Action<string> logger;
 
-        private bool isStopRequested;
-
         private readonly object lockObj = new object();
 
         public IterativeSearch(
@@ -53,7 +51,7 @@ namespace Alligator.Solver.Algorithm
         {
             logger("Iterative search has started");
 
-            isStopRequested = false;
+            var isStopRequested = false;
             IMiniMax<TPosition> miniMax = null;
             int solution = 0;
             IList<TPly> forecast = new List<TPly>();
@@ -67,13 +65,13 @@ namespace Alligator.Solver.Algorithm
                     TPosition position = CreateFromHistory(history);
                     var start = DateTime.Now;
                     int nextSolution;
-                    if (searchDepthLimit <= 4)
+                    if (searchDepthLimit < solverConfiguration.MinimumSearchDepthToUseMtdf)
                     {
                         nextSolution = SimpleSearch(miniMax, position, -int.MaxValue, int.MaxValue);
                     }
                     else
                     {
-                        nextSolution = AspirationSearch(miniMax, position, solution);
+                        nextSolution = MtdfSearch(miniMax, position, solution);
                     }
                     if (!isStopRequested)
                     {
@@ -110,32 +108,27 @@ namespace Alligator.Solver.Algorithm
             return miniMax.Search(position, alpha, beta);
         }
 
-        private int AspirationSearch(IMiniMax<TPosition> miniMax, TPosition position, int estimatedValue)
+        private int MtdfSearch(IMiniMax<TPosition> miniMax, TPosition position, int estimatedValue)
         {
-            int delta = solverConfiguration.AspirationSearchDelta;
-            int alpha = SubtractSafe(estimatedValue, delta);
-            int beta = AddSafe(estimatedValue, delta);
+            var value = estimatedValue;
 
-            while (!isStopRequested)
+            var upperBound = int.MaxValue;
+            var lowerBound = -int.MaxValue;
+
+            while (lowerBound < upperBound)
             {
-                delta = AddSafe(delta, delta);
-                int value = SimpleSearch(miniMax, position, alpha, beta);
-                if (value <= alpha)
+                var beta = Math.Max(value, lowerBound + 1);
+                value = SimpleSearch(miniMax, position, beta - 1, beta);
+                if (value < beta)
                 {
-                    beta = (alpha + beta) / 2;
-                    alpha = SubtractSafe(estimatedValue, delta);                        
-                }
-                else if (value >= beta)
-                {
-                    alpha = (alpha + beta) / 2;
-                    beta = AddSafe(estimatedValue, delta);
+                    upperBound = value;
                 }
                 else
                 {
-                    return value;
-                }
+                    lowerBound = value;
+                }   
             }
-            return 0;
+            return value;
         }
 
         private TPosition CreateFromHistory(IList<TPly> history)
@@ -159,24 +152,6 @@ namespace Alligator.Solver.Algorithm
                 current.Do(transposition.BestStrategy);
             }
             return principalVariation;
-        }
-
-        private int AddSafe(int x, int y)
-        {
-            if (x < int.MaxValue - y)
-            {
-                return x + y;
-            }
-            return int.MaxValue;
-        }
-
-        private int SubtractSafe(int x, int y)
-        {
-            if (x > -int.MaxValue + y)
-            {
-                return x - y;
-            }
-            return int.MinValue;
         }
     }
 }
