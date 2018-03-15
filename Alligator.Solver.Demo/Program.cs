@@ -99,8 +99,6 @@ namespace Demo
 
         private static TicTacToeCell AiStep(IList<TicTacToeCell> history, ISolver<TicTacToeCell> solver)
         {
-            TicTacToePosition position = new TicTacToePosition(history);
-
             IList<TicTacToeCell> forecast;
             int evaluationValue = solver.Maximize(history, out forecast);
 
@@ -150,7 +148,7 @@ namespace Demo
                             Console.Write(string.Format(" {0}", TicTacToeMark.O));
                             break;
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentOutOfRangeException($"Unknown tic-tac-toe mark type: {position.GetMarkAt(i, j)}");
                     }
                     Console.ForegroundColor = ConsoleColor.White;
                 }
