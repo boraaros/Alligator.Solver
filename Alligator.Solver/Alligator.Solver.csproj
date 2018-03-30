@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.4.0</Version>
+    <PackageId>Alligator.Solver</PackageId>
+    <Version>1.4.1</Version>
     <Authors>Adrian Bilics</Authors>
     <Description>The abstract core library of artificial intelligence for different two-player zero-sum games.</Description>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
