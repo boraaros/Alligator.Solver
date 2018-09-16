@@ -14,9 +14,9 @@ namespace Demo
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Hello tic-tac-toe demo!");
 
-            var externalLogics = new TicTacToeLogics();
+            var rules = new TicTacToeRules();
             var solverConfiguration = new SolverConfiguration();
-            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration, SolverLog);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(rules, solverConfiguration, SolverLog);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             TicTacToePosition position = new TicTacToePosition();
@@ -37,7 +37,7 @@ namespace Demo
                         {
                             solver = solverFactory.Create();
                             next = AiStep(history, solver);
-                            copy.Do(next);
+                            copy.Take(next);
                             break;
                         }
                         catch (Exception e)
@@ -53,7 +53,7 @@ namespace Demo
                         try
                         {
                             next = HumanStep();
-                            copy.Do(next);
+                            copy.Take(next);
                             break;
                         }
                         catch (Exception e)
@@ -62,7 +62,7 @@ namespace Demo
                         }
                     }
                 }
-                position.Do(next);
+                position.Take(next);
                 history.Add(next);
                 aiStep = !aiStep;
             }
@@ -99,22 +99,16 @@ namespace Demo
 
         private static TicTacToeCell AiStep(IList<TicTacToeCell> history, ISolver<TicTacToeCell> solver)
         {
-            IList<TicTacToeCell> forecast;
-            int evaluationValue = solver.Maximize(history, out forecast);
-
-            if (forecast == null || forecast.Count == 0)
-            {
-                throw new InvalidOperationException("Solver error!");
-            }
+            var next = solver.CalculateNextMove(history);
 
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("Alligator is thinking...");
-            Console.WriteLine(string.Format("Evaluation value: {0} ({1})", evaluationValue, ToString(evaluationValue)));
-            Console.WriteLine(string.Format("Optimal next step: {0}", forecast[0]));
-            Console.WriteLine(string.Format("Forecast: {0}", string.Join(" --> ", forecast)));
+            //Console.WriteLine(string.Format("Evaluation value: {0} ({1})", evaluationValue, ToString(evaluationValue)));
+            Console.WriteLine(string.Format("Optimal next step: {0}", next));
+            //Console.WriteLine(string.Format("Forecast: {0}", string.Join(" --> ", forecast)));
             Console.ForegroundColor = ConsoleColor.White;
 
-            return forecast[0];
+            return next;
         }
 
         private static string ToString(int evaluationValue)

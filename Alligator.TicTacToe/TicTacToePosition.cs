@@ -7,105 +7,87 @@ namespace Alligator.TicTacToe
 {
     public class TicTacToePosition : IPosition<TicTacToeCell>
     {
-        private ulong identifier;
-        private bool isEnded;
-        private bool hasWinner;
-
         private readonly TicTacToeMark[,] board;
-        private readonly IList<TicTacToeCell> history;
         private TicTacToeMark nextMarkType;
         
         public const int BoardSize = 3;
 
         public TicTacToePosition()
         {
-            identifier = 0ul;
-            isEnded = false;
-            hasWinner = false;
+            Identifier = 0ul;
+            IsEnded = false;
+            HasWinner = false;
 
             board = new TicTacToeMark[BoardSize, BoardSize];
-            history = new List<TicTacToeCell>();
+            History = new List<TicTacToeCell>();
             nextMarkType = TicTacToeMark.X;
         }
 
         public TicTacToePosition(IEnumerable<TicTacToeCell> history)
             : this()
         {
-            foreach (var ply in history)
+            foreach (var move in history)
             {
-                Do(ply);
+                Take(move);
             }
         }
 
-        public ulong Identifier
-        {
-            get { return identifier; }
-        }
+        public ulong Identifier { get; private set; }
 
-        public bool IsEnded
-        {
-            get { return isEnded; }
-        }
+        public bool IsEnded { get; private set; }
 
-        public bool HasWinner
-        {
-            get { return hasWinner; }
-        }
+        public bool HasWinner { get; private set; }
 
-        public bool IsQuiet
-        {
-            get { return true; }
-        }
+        public IList<TicTacToeCell> History { get; }
 
-        public IList<TicTacToeCell> History
-        {
-            get { return history; }
-        }
+        public bool IsQuiet => true;
 
-        public void Do(TicTacToeCell ply)
+        public int Value => 0;
+
+        public void Take(TicTacToeCell move)
         {
-            if (ply == null)
+            if (move == null)
             {
                 throw new ArgumentNullException("ply");
             }
-            if (isEnded)
+            if (IsEnded)
             {
                 throw new InvalidOperationException("Cannot mark, because the game is already over");
             }
-            if (hasWinner)
+            if (HasWinner)
             {
                 throw new InvalidOperationException(string.Format("Position has winner, but the game isn't over"));
             }
-            if (board[ply.Row, ply.Column] != TicTacToeMark.Empty)
+            if (board[move.Row, move.Column] != TicTacToeMark.Empty)
             {
                 throw new InvalidOperationException(string.Format("Cannot mark, because target cell isn't empty: [{0},{1}]",
-                    ply.Row, ply.Column));
+                    move.Row, move.Column));
             }
-            board[ply.Row, ply.Column] = nextMarkType;
-            history.Add(ply);
+            board[move.Row, move.Column] = nextMarkType;
+            History.Add(move);
             nextMarkType = ChangeMark(nextMarkType);
             Update();
-            identifier = ComputeIdentifier();
+            Identifier = ComputeIdentifier();
         }
 
-        public void Undo()
+        public void TakeBack()
         {
-            if (history.Count == 0)
+            if (History.Count == 0)
             {
                 throw new InvalidOperationException("Cannot remove mark from empty board");
             }
-            var lastPly = history[history.Count - 1];
-            if (board[lastPly.Row, lastPly.Column] == TicTacToeMark.Empty)
+            var lasTMove = History[History.Count - 1];
+            if (board[lasTMove.Row, lasTMove.Column] == TicTacToeMark.Empty)
             {
                 throw new InvalidOperationException(string.Format("Cannot remove mark, because target cell is already empty: [{0},{1}]",
-                    lastPly.Row, lastPly.Column));
+                    lasTMove.Row, lasTMove.Column));
             }
-            board[lastPly.Row, lastPly.Column] = TicTacToeMark.Empty;
-            history.RemoveAt(history.Count - 1);
-            isEnded = false;
-            hasWinner = false;
+            board[lasTMove.Row, lasTMove.Column] = TicTacToeMark.Empty;
+            History.RemoveAt(History.Count - 1);
+            IsEnded = false;
+            HasWinner = false;
             nextMarkType = ChangeMark(nextMarkType);
-            identifier = ComputeIdentifier();
+            Identifier = ComputeIdentifier();
         }
 
         public TicTacToeMark GetMarkAt(int row, int column)
@@ -139,12 +121,12 @@ namespace Alligator.TicTacToe
 
         private void Update()
         {
-            var lastPly = history[history.Count - 1];
+            var lasTMove = History[History.Count - 1];
 
-            if (IsHorizontalLine(lastPly.Row) || IsVerticalLine(lastPly.Column))
+            if (IsHorizontalLine(lasTMove.Row) || IsVerticalLine(lasTMove.Column))
             {
-                isEnded = true;
-                hasWinner = true;
+                IsEnded = true;
+                HasWinner = true;
                 return;
             }
             if (board[1, 1] == TicTacToeMark.Empty)
@@ -153,13 +135,13 @@ namespace Alligator.TicTacToe
             }
             if (IsDiagonalLine() || IsReverseDiagonalLine())
             {
-                isEnded = true;
-                hasWinner = true;
+                IsEnded = true;
+                HasWinner = true;
                 return;
             }
             if (!HasEmptyCell())
             {
-                isEnded = true;
+                IsEnded = true;
             }
         }
 

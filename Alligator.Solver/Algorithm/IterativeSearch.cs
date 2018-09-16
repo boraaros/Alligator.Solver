@@ -2,70 +2,73 @@
 using Alligator.Solver.Heuristics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Alligator.Solver.Algorithm
 {
-    internal class IterativeSearch<TPosition, TPly> : ISolver<TPly>
-        where TPosition : IPosition<TPly>
+    internal class IterativeSearch<TPosition, TMove> : ISolver<TMove>
+        where TPosition : IPosition<TMove>
     {
-        private readonly IExternalLogics<TPosition, TPly> externalLogics;
-        private readonly IHeuristicTables<TPly> heuristicTables;
-        private readonly ICacheTables<TPosition, TPly> cacheTables;
+        private readonly IRules<TPosition, TMove> rules;
+        private readonly IHeuristicTables<TMove> heuristicTables;
+        private readonly ICacheTables<TPosition, TMove> cacheTables;
         private readonly ISolverConfiguration solverConfiguration;
+        private readonly IAlgorithmSettings algorithmSettings;
         private readonly Action<string> logger;
 
         private readonly object lockObj = new object();
 
         public IterativeSearch(
-            IExternalLogics<TPosition, TPly> externalLogics,
-            ICacheTables<TPosition, TPly> cacheTables,
-            IHeuristicTables<TPly> heuristicTables,
+            IRules<TPosition, TMove> rules,
+            ICacheTables<TPosition, TMove> cacheTables,
+            IHeuristicTables<TMove> heuristicTables,
             ISolverConfiguration solverConfiguration,
+            IAlgorithmSettings algorithmSettings,
             Action<string> logger)
         {
-            this.externalLogics = externalLogics ?? throw new ArgumentNullException(nameof(externalLogics));
+            this.rules = rules ?? throw new ArgumentNullException(nameof(rules));
             this.cacheTables = cacheTables ?? throw new ArgumentNullException(nameof(cacheTables));
             this.heuristicTables = heuristicTables ?? throw new ArgumentNullException(nameof(heuristicTables));
             this.solverConfiguration = solverConfiguration ?? throw new ArgumentNullException(nameof(solverConfiguration));
+            this.algorithmSettings = algorithmSettings ?? throw new ArgumentNullException(nameof(algorithmSettings));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public int Maximize(IList<TPly> history, out IList<TPly> forecast)
+        public TMove CalculateNextMove(IList<TMove> history)
         {
-            if (history == null)
-            {
-                throw new ArgumentNullException("history");
-            }
+            if (history == null) throw new ArgumentNullException(nameof(history));
 
             TPosition position = CreateFromHistory(history);
-            if (position.IsEnded)
+
+            if (!rules.LegalMovesAt(position).Any())
             {
-                throw new InvalidOperationException("The game is already over");
+                throw new InvalidOperationException("Next move calculation failed, because the game is already over");
             }
 
-            return Run(history, out forecast);
+            return Run(history);
         }
 
-        private int Run(IList<TPly> history, out IList<TPly> principalVariation)
+        private TMove Run(IList<TMove> history)
         {
-            logger("Iterative search has started");
+            logger("Iterative search has been started");
 
             var isStopRequested = false;
             IMiniMax<TPosition> miniMax = null;
             int solution = 0;
-            IList<TPly> forecast = new List<TPly>();
+            IList<TMove> forecast = new List<TMove>();
+
             var task = Task.Factory.StartNew(() =>
             {
                 int searchDepthLimit = 0;
-                while (!isStopRequested && searchDepthLimit++ <= solverConfiguration.SearchDepthLimit)
+                while (!isStopRequested && !IsFullSearch(history, forecast) && searchDepthLimit++ <= algorithmSettings.SearchDepthLimit)
                 {
-                    var settings = new MiniMaxSettings(searchDepthLimit, solverConfiguration.QuiescenceExtensionLimit);
-                    miniMax = new NegaScout<TPosition, TPly>(externalLogics, cacheTables, heuristicTables, settings);
+                    var settings = new MiniMaxSettings(searchDepthLimit, algorithmSettings.QuiescenceExtensionLimit);
+                    miniMax = new NegaScout<TPosition, TMove>(rules, cacheTables, heuristicTables, settings); // TODO: ioc
                     TPosition position = CreateFromHistory(history);
                     var start = DateTime.Now;
                     int nextSolution;
-                    if (searchDepthLimit < solverConfiguration.MinimumSearchDepthToUseMtdf)
+                    if (searchDepthLimit < algorithmSettings.MinimumSearchDepthToUseMtdf)
                     {
                         nextSolution = SimpleSearch(miniMax, position, -int.MaxValue, int.MaxValue);
                     }
@@ -75,37 +78,34 @@ namespace Alligator.Solver.Algorithm
                     }
                     if (!isStopRequested)
                     {
-                        lock (lockObj)
-                        {
-                            solution = nextSolution;
-                        }
+                        solution = nextSolution;
                         forecast = RevealPrincipalVariation(history);
 
                         logger(string.Format("#{0} | {1} ms | {2} | {3}", 
                             searchDepthLimit, (long)((DateTime.Now - start).TotalMilliseconds), solution, string.Join(" > ", forecast)));
                     }
-                    var p = CreateFromHistory(history);
-                    foreach (var ply in forecast)
-                    {
-                        p.Do(ply);
-                    }
-                    if (p.IsEnded)
-                    {
-                        break;
-                    }
                 }
             });
 
             task.Wait(solverConfiguration.TimeLimitPerMove);
-            principalVariation = forecast;
             isStopRequested = true;
             miniMax.Stop();
-            return solution;
+            return forecast[0];
+        }
+
+        private bool IsFullSearch(IList<TMove> history, IList<TMove> forecast)
+        {
+            var position = CreateFromHistory(history);
+            foreach (var move in forecast)
+            {
+                position.Take(move);
+            }
+            return !rules.LegalMovesAt(position).Any();
         }
 
         private int SimpleSearch(IMiniMax<TPosition> miniMax, TPosition position, int alpha, int beta)
         {
-            return miniMax.Search(position, alpha, beta);
+            return miniMax.Start(position, alpha, beta);
         }
 
         private int MtdfSearch(IMiniMax<TPosition> miniMax, TPosition position, int estimatedValue)
@@ -131,25 +131,25 @@ namespace Alligator.Solver.Algorithm
             return value;
         }
 
-        private TPosition CreateFromHistory(IList<TPly> history)
+        private TPosition CreateFromHistory(IList<TMove> history)
         {
-            TPosition position = externalLogics.CreateEmptyPosition();
-            foreach (var ply in history)
+            TPosition position = rules.InitialPosition();
+            foreach (var move in history)
             {
-                position.Do(ply);
+                position.Take(move);
             }
             return position;
         }
 
-        private IList<TPly> RevealPrincipalVariation(IList<TPly> history)
+        private IList<TMove> RevealPrincipalVariation(IList<TMove> history)
         {
-            IList<TPly> principalVariation = new List<TPly>();
+            IList<TMove> principalVariation = new List<TMove>();
             TPosition current = CreateFromHistory(history);
-            Transposition<TPly> transposition;
+            Transposition<TMove> transposition;
             while (cacheTables.TryGetTransposition(current, out transposition))
             {
                 principalVariation.Add(transposition.BestStrategy);
-                current.Do(transposition.BestStrategy);
+                current.Take(transposition.BestStrategy);
             }
             return principalVariation;
         }

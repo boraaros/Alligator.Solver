@@ -6,43 +6,43 @@ using Alligator.Solver.Heuristics;
 
 namespace Alligator.Solver.Algorithm
 {
-    internal class NegaScout<TPosition, TPly> : IMiniMax<TPosition>
-        where TPosition : IPosition<TPly>
+    internal class NegaScout<TPosition, TMove> : IMiniMax<TPosition>
+        where TPosition : IPosition<TMove>
     {
-        private readonly IExternalLogics<TPosition, TPly> externalLogics;
-        private readonly IHeuristicTables<TPly> heuristicTables;
-        private readonly ICacheTables<TPosition, TPly> cacheTables;
+        private readonly IRules<TPosition, TMove> rules;
+        private readonly IHeuristicTables<TMove> heuristicTables;
+        private readonly ICacheTables<TPosition, TMove> cacheTables;
         private readonly MiniMaxSettings miniMaxSettings;
 
         private bool isStopRequested;
 
         public NegaScout(
-            IExternalLogics<TPosition, TPly> externalLogics,
-            ICacheTables<TPosition, TPly> cacheTables,
-            IHeuristicTables<TPly> heuristicTables,
+            IRules<TPosition, TMove> rules,
+            ICacheTables<TPosition, TMove> cacheTables,
+            IHeuristicTables<TMove> heuristicTables,
             MiniMaxSettings miniMaxSettings)
         {
-            this.externalLogics = externalLogics ?? throw new ArgumentNullException(nameof(externalLogics));
+            this.rules = rules ?? throw new ArgumentNullException(nameof(rules));
             this.cacheTables = cacheTables ?? throw new ArgumentNullException(nameof(cacheTables));
             this.heuristicTables = heuristicTables ?? throw new ArgumentNullException(nameof(heuristicTables));
             this.miniMaxSettings = miniMaxSettings ?? throw new ArgumentNullException(nameof(miniMaxSettings));
         }
 
-        public int Search(TPosition position, int initialAlpha, int initialBeta)
+        public int Start(TPosition position, int initialAlpha, int initialBeta)
         {
             isStopRequested = false;
             return SearchRecursively(position, miniMaxSettings.MaxDepth, initialAlpha, initialBeta);
         }
 
-        public int Search(TPosition position)
+        public int Start(TPosition position)
         {
-            return Search(position, -int.MaxValue, int.MaxValue);
+            return Start(position, -int.MaxValue, int.MaxValue);
         }
 
         private int SearchRecursively(TPosition position, int depth, int alpha, int beta)
         {
             int originalAlpha = alpha;
-            Transposition<TPly> transposition;
+            Transposition<TMove> transposition;
             if (cacheTables.TryGetTransposition(position, out transposition) && depth <= transposition.Depth)
             {
                 switch (transposition.EvaluationMode)
@@ -67,11 +67,11 @@ namespace Alligator.Solver.Algorithm
                 return -HeuristicValue(position, depth);
             }
             int bestValue = int.MinValue;
-            TPly bestPly = default(TPly);
+            TMove besTMove = default(TMove);
             bool isFirst = true;
-            foreach (var ply in OrderedStrategies(position, depth))
+            foreach (var move in OrderedStrategies(position, depth))
             {
-                position.Do(ply);
+                position.Take(move);
                 int value = 0;
                 if (isFirst)
                 {
@@ -86,7 +86,7 @@ namespace Alligator.Solver.Algorithm
                         value = -SearchRecursively(position, depth - 1, -beta, -value);
                     }
                 }
-                position.Undo();
+                position.TakeBack();
 
                 if (isStopRequested)
                 {
@@ -96,19 +96,19 @@ namespace Alligator.Solver.Algorithm
                 if (value > bestValue)
                 {
                     bestValue = value;
-                    bestPly = ply;
+                    besTMove = move;
                 }
                 alpha = Math.Max(alpha, value);
                 if (IsBetaCutOff(alpha, beta))
                 {
-                    HandleBetaCutOff(ply, depth);
+                    HandleBetaCutOff(move, depth);
                     break;
                 }
             }
             if (depth > 0)
             {
                 EvaluationMode evaluationMode = GetEvaluationMode(bestValue, originalAlpha, beta);
-                transposition = new Transposition<TPly>(evaluationMode, bestValue, depth, bestPly);
+                transposition = new Transposition<TMove>(evaluationMode, bestValue, depth, besTMove);
                 cacheTables.AddTransposition(position, transposition);
             }
             return bestValue;
@@ -124,11 +124,11 @@ namespace Alligator.Solver.Algorithm
             return depth < 0;
         }
 
-        private void HandleBetaCutOff(TPly ply, int depth)
+        private void HandleBetaCutOff(TMove move, int depth)
         {
             if (!isStopRequested && !IsQuiescenceExtension(depth))
             {
-                heuristicTables.StoreBetaCutOff(ply, depth);
+                heuristicTables.StoreBetaCutOff(move, depth);
             }
         }
 
@@ -148,10 +148,10 @@ namespace Alligator.Solver.Algorithm
             }
         }
 
-        private IEnumerable<TPly> OrderedStrategies(TPosition position, int depth)
+        private IEnumerable<TMove> OrderedStrategies(TPosition position, int depth)
         {
-            var plies = externalLogics.GetStrategiesFrom(position).ToList();
-            Transposition<TPly> transposition;
+            var plies = rules.LegalMovesAt(position).ToList();
+            Transposition<TMove> transposition;
             if (cacheTables.TryGetTransposition(position, out transposition))
             {
                 yield return transposition.BestStrategy;
@@ -159,28 +159,28 @@ namespace Alligator.Solver.Algorithm
             }
             var killers = heuristicTables.GetKillerPlies(depth);
 
-            var cutPlies = new List<KeyValuePair<TPly, int>>();
-            foreach (var ply in plies)
+            var cutPlies = new List<KeyValuePair<TMove, int>>();
+            foreach (var move in plies)
             {
-                if (killers.Contains(ply))
+                if (killers.Contains(move))
                 {
-                    yield return ply;
+                    yield return move;
                 }
                 else
                 {
-                    var score = heuristicTables.GetHistoryScore(ply);
-                    cutPlies.Add(new KeyValuePair<TPly, int>(ply, score));
+                    var score = heuristicTables.GetHistoryScore(move);
+                    cutPlies.Add(new KeyValuePair<TMove, int>(move, score));
                 }
             }
-            foreach (var ply in cutPlies.OrderByDescending(p => p.Value))
+            foreach (var move in cutPlies.OrderByDescending(p => p.Value))
             {
-                yield return ply.Key;
+                yield return move.Key;
             }
         }
 
         private bool IsLeaf(TPosition position, int depth)
         {
-            if (position.IsEnded)
+            if (!rules.LegalMovesAt(position).Any())
             {
                 return true;
             }
@@ -194,18 +194,18 @@ namespace Alligator.Solver.Algorithm
         private int HeuristicValue(TPosition position, int depth)
         {
             int distanceFromRoot = miniMaxSettings.MaxDepth - depth;
-            if (!position.IsEnded)
+            if (rules.LegalMovesAt(position).Any())
             {
                 int value;
                 if (!cacheTables.TryGetValue(position, out value))
                 {
-                    value = externalLogics.StaticEvaluate(position);
+                    value = position.Value;
                     CheckEvaluationValue(value);
                     cacheTables.AddValue(position, value);
                 }
                 return IsOpponentsTurn(distanceFromRoot) ? value : -value;
             }
-            return position.HasWinner ? (int.MaxValue - distanceFromRoot) : 0;
+            return rules.IsDraw(position) ? 0 : int.MaxValue - distanceFromRoot;
         }
 
         private void CheckEvaluationValue(int value)

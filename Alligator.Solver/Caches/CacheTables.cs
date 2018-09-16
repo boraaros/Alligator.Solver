@@ -2,21 +2,21 @@
 
 namespace Alligator.Solver.Caches
 {
-    internal class CacheTables<TPosition, TPly> : ICacheTables<TPosition, TPly>
-        where TPosition : IPosition<TPly>
+    internal class CacheTables<TPosition, TMove> : ICacheTables<TPosition, TMove>
+        where TPosition : IPosition<TMove>
     {
         private readonly IHashTable<ulong, int> evaluationTable;
-        private readonly IHashTable<ulong, Transposition<TPly>> transpositionTable;
+        private readonly IHashTable<ulong, Transposition<TMove>> transpositionTable;
 
-        public CacheTables(ISolverConfiguration solverConfiguration)
+        public CacheTables(ICachesSettings cachesSettings)
         {
             evaluationTable = new HashTable<int>(
-                (int)Math.Pow(2, solverConfiguration.EvaluationTableSizeExponent),
-                solverConfiguration.EvaluationTableRetryLimit,
+                (int)Math.Pow(2, cachesSettings.EvaluationTableSizeExponent),
+                cachesSettings.EvaluationTableRetryLimit,
                 (x, y) => true);
-            transpositionTable = new HashTable<Transposition<TPly>>(
-                (int)Math.Pow(2, solverConfiguration.TranspositionTableSizeExponent),
-                solverConfiguration.TranspositionTableRetryLimit, 
+            transpositionTable = new HashTable<Transposition<TMove>>(
+                (int)Math.Pow(2, cachesSettings.TranspositionTableSizeExponent),
+                cachesSettings.TranspositionTableRetryLimit, 
                 (x, y) => true);
         }
 
@@ -30,12 +30,12 @@ namespace Alligator.Solver.Caches
             return evaluationTable.TryGetValue(position.Identifier, out value);
         }
 
-        public void AddTransposition(TPosition position, Transposition<TPly> transposition)
+        public void AddTransposition(TPosition position, Transposition<TMove> transposition)
         {
             transpositionTable.TryAdd(position.Identifier, transposition);
         }
 
-        public bool TryGetTransposition(TPosition position, out Transposition<TPly> transposition)
+        public bool TryGetTransposition(TPosition position, out Transposition<TMove> transposition)
         {
             return transpositionTable.TryGetValue(position.Identifier, out transposition);
         }

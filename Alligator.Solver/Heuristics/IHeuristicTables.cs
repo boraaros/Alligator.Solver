@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Alligator.Solver.Heuristics
 {
-    internal interface IHeuristicTables<TPly>
+    internal interface IHeuristicTables<TMove>
     {
         void ClearTables();
-        void StoreBetaCutOff(TPly ply, int depth);
-        int GetHistoryScore(TPly ply);
-        IEnumerable<TPly> GetKillerPlies(int depth);
+        void StoreBetaCutOff(TMove move, int depth);
+        int GetHistoryScore(TMove move);
+        IEnumerable<TMove> GetKillerPlies(int depth);
     }
 }

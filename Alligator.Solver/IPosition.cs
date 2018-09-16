@@ -2,13 +2,36 @@
 
 namespace Alligator.Solver
 {
-    public interface IPosition<TPly>
+    /// <summary>
+    /// Represent the game board.
+    /// </summary>
+    /// <typeparam name="TMove">type of moves in the specified game</typeparam>
+    public interface IPosition<TMove>
     {
+        /// <summary>
+        /// Unique identifier or very strong hash.
+        /// </summary>
         ulong Identifier { get; }
-        bool IsEnded { get; }
-        bool HasWinner { get; }  
-        bool IsQuiet { get; }       
-        void Do(TPly ply);
-        void Undo();
+
+        /// <summary>
+        /// Static evaluation value.
+        /// </summary>
+        int Value { get; }
+
+        /// <summary>
+        /// This game specified logics can reduce the horizon effect.
+        /// </summary>
+        bool IsQuiet { get; }    
+
+        /// <summary>
+        /// Take the specified move.
+        /// </summary>
+        /// <param name="move">specified move</param>
+        void Take(TMove move);
+
+        /// <summary>
+        /// Take back the last move.
+        /// </summary>
+        void TakeBack();
     }
 }
