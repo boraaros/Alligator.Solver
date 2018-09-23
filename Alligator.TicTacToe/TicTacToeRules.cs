@@ -43,6 +43,11 @@ namespace Alligator.TicTacToe
                 throw new ArgumentNullException("position");
             }
 
+            if (!position.History.Any())
+            {
+                return false;
+            }
+
             var lastMove = position.History[position.History.Count - 1];
 
             if (IsHorizontalLine(position, lastMove.Row) || IsVerticalLine(position, lastMove.Column))
