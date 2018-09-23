@@ -2,15 +2,19 @@
 
 namespace Alligator.Solver
 {
+    /// <summary>
+    /// Can be used to configure the solver.
+    /// </summary>
     public interface ISolverConfiguration
     {
+        /// <summary>
+        /// The maximum thinking time per move.
+        /// </summary>
         TimeSpan TimeLimitPerMove { get; }
-        int SearchDepthLimit { get; }
-        int QuiescenceExtensionLimit { get; }
-        int EvaluationTableSizeExponent { get; }
-        int EvaluationTableRetryLimit { get; }
-        int TranspositionTableSizeExponent { get; }
-        int TranspositionTableRetryLimit { get; }
-        int MinimumSearchDepthToUseMtdf { get; }
+
+        /// <summary>
+        /// The maximum number of concurrent tasks enabled by this configuration instance.
+        /// </summary>
+        int MaxDegreeOfParallelism { get; }        
     }
 }

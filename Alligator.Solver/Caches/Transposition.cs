@@ -2,14 +2,14 @@
 
 namespace Alligator.Solver.Caches
 {
-    internal class Transposition<TPly>
+    internal class Transposition<TMove>
     {
         public EvaluationMode EvaluationMode;
         public int Value;
         public int Depth;
-        public TPly BestStrategy;
+        public TMove BestStrategy;
 
-        public Transposition(EvaluationMode evaluationMode, int value, int depth, TPly bestStrategy)
+        public Transposition(EvaluationMode evaluationMode, int value, int depth, TMove bestStrategy)
         {
             EvaluationMode = evaluationMode;
             Value = value;

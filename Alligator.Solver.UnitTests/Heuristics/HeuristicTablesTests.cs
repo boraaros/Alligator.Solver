@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Test.Heuristics
+namespace Alligator.Solver.UnitTests.Heuristics
 {
     [TestClass]
     public class HeuristicTablesTests

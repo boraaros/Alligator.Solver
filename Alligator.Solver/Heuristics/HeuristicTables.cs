@@ -4,17 +4,17 @@ using System.Linq;
 
 namespace Alligator.Solver.Heuristics
 {
-    internal class HeuristicTables<TPly> : IHeuristicTables<TPly>
+    internal class HeuristicTables<TMove> : IHeuristicTables<TMove>
     {
-        private readonly IDictionary<int, IList<TPly>> killerPlies;
-        private readonly IDictionary<TPly, int> historyScores;
+        private readonly IDictionary<int, IList<TMove>> killerPlies;
+        private readonly IDictionary<TMove, int> historyScores;
 
         private const int KillerPliesLimitPerDepth = 2;
 
         public HeuristicTables()
         {
-            killerPlies = new Dictionary<int, IList<TPly>>();
-            historyScores = new Dictionary<TPly, int>();
+            killerPlies = new Dictionary<int, IList<TMove>>();
+            historyScores = new Dictionary<TMove, int>();
         }
 
         public void ClearTables()
@@ -23,56 +23,56 @@ namespace Alligator.Solver.Heuristics
             historyScores.Clear();
         }
 
-        public void StoreBetaCutOff(TPly ply, int depth)
+        public void StoreBetaCutOff(TMove move, int depth)
         {
-            UpdateHistoryScores(ply, depth);
-            UpdateKillerPlies(ply, depth);
+            UpdateHistoryScores(move, depth);
+            UpdateKillerPlies(move, depth);
         }
 
-        public int GetHistoryScore(TPly ply)
+        public int GetHistoryScore(TMove move)
         {
             int result;
-            if (historyScores.TryGetValue(ply, out result))
+            if (historyScores.TryGetValue(move, out result))
             {
                 return result;
             }
             return 0;
         }
 
-        public IEnumerable<TPly> GetKillerPlies(int depth)
+        public IEnumerable<TMove> GetKillerPlies(int depth)
         {
-            IList<TPly> killers;
+            IList<TMove> killers;
             if (killerPlies.TryGetValue(depth, out killers))
             {
                 return killers;
             }
-            return Enumerable.Empty<TPly>();
+            return Enumerable.Empty<TMove>();
         }
 
-        public void UpdateHistoryScores(TPly ply, int depth)
+        public void UpdateHistoryScores(TMove move, int depth)
         {
             var score = depth * depth;
             int result;
-            if (historyScores.TryGetValue(ply, out result))
+            if (historyScores.TryGetValue(move, out result))
             {
-                historyScores[ply] = result + score;
+                historyScores[move] = result + score;
             }
             else
             {
-                historyScores.Add(ply, score);
+                historyScores.Add(move, score);
             }
         }
 
-        public void UpdateKillerPlies(TPly ply, int depth)
+        public void UpdateKillerPlies(TMove move, int depth)
         {
-            IList<TPly> killers;
+            IList<TMove> killers;
             if (killerPlies.TryGetValue(depth, out killers))
             {
-                if (killers[0].Equals(ply))
+                if (killers[0].Equals(move))
                 {
                     return;
                 }
-                killers.Insert(0, ply);
+                killers.Insert(0, move);
                 if (killers.Count > KillerPliesLimitPerDepth)
                 {
                     killers.RemoveAt(KillerPliesLimitPerDepth);
@@ -80,7 +80,7 @@ namespace Alligator.Solver.Heuristics
             }
             else
             {
-                killerPlies.Add(depth, new List<TPly> { ply });
+                killerPlies.Add(depth, new List<TMove> { move });
             }
         }
     }

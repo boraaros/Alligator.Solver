@@ -23,19 +23,16 @@ namespace Alligator.Solver.UnitTests
                 new TicTacToeCell(2, 0)
             };
 
-            var externalLogics = new TicTacToeLogics();
+            var rules = new TicTacToeRules();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(rules, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            IList<TicTacToeCell> forecast;
-            int result = solver.Maximize(history, out forecast);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
 
             // Assert
-            Assert.AreEqual(0, result);
-            Assert.IsNotNull(forecast);
-            Assert.AreEqual(7, forecast.Count);
+            Assert.IsNotNull(nextPly);
         }
 
         [TestMethod]
@@ -54,21 +51,17 @@ namespace Alligator.Solver.UnitTests
                 new TicTacToeCell(2, 2)
             };
 
-            var externalLogics = new TicTacToeLogics();
+            var rules = new TicTacToeRules();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(rules, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            IList<TicTacToeCell> forecast;
-            int result = solver.Maximize(history, out forecast);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
 
             // Assert
-            Assert.AreEqual(int.MaxValue - 3, result);
-            Assert.IsNotNull(forecast);
-            Assert.AreEqual(3, forecast.Count);
-            Assert.AreEqual(1, forecast[0].Row);
-            Assert.AreEqual(1, forecast[0].Column);
+            Assert.AreEqual(1, nextPly.Row);
+            Assert.AreEqual(1, nextPly.Column);
         }
 
         [TestMethod]
@@ -86,23 +79,17 @@ namespace Alligator.Solver.UnitTests
                 new TicTacToeCell(2, 2)
             };
 
-            var externalLogics = new TicTacToeLogics();
+            var rules = new TicTacToeRules();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(rules, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            IList<TicTacToeCell> forecast;
-            int result = solver.Maximize(history, out forecast);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
 
             // Assert
-            Assert.AreEqual(-int.MaxValue + 4, result);
-            Assert.IsNotNull(forecast);
-            Assert.AreEqual(4, forecast.Count);
-            Assert.AreEqual(1, forecast[0].Row);
-            Assert.AreEqual(1, forecast[0].Column);
-            Assert.AreEqual(2, forecast[1].Row);
-            Assert.AreEqual(0, forecast[1].Column);
+            Assert.AreEqual(1, nextPly.Row);
+            Assert.AreEqual(1, nextPly.Column);
         }
 
         [ExpectedException(typeof(InvalidOperationException))]
@@ -127,14 +114,13 @@ namespace Alligator.Solver.UnitTests
                 new TicTacToeCell(2, 2)
             };
 
-            var externalLogics = new TicTacToeLogics();
+            var rules = new TicTacToeRules();
             var solverConfiguration = GetSolverConfiguration();
-            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(externalLogics, solverConfiguration);
+            var solverFactory = new SolverFactory<TicTacToePosition, TicTacToeCell>(rules, solverConfiguration);
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            IList<TicTacToeCell> forecast;
-            solver.Maximize(history, out forecast);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
         }
 
         private ISolverConfiguration GetSolverConfiguration()
@@ -144,27 +130,6 @@ namespace Alligator.Solver.UnitTests
             solverConfiguration
                 .Setup(t => t.TimeLimitPerMove)
                 .Returns(TimeSpan.FromSeconds(1));
-            solverConfiguration
-                .Setup(t => t.SearchDepthLimit)
-                .Returns(10);
-            solverConfiguration
-                .Setup(t => t.QuiescenceExtensionLimit)
-                .Returns(0);
-            solverConfiguration
-                .Setup(t => t.EvaluationTableSizeExponent)
-                .Returns(8);
-            solverConfiguration
-                .Setup(t => t.EvaluationTableRetryLimit)
-                .Returns(0);
-            solverConfiguration
-                .Setup(t => t.TranspositionTableSizeExponent)
-                .Returns(20);
-            solverConfiguration
-                .Setup(t => t.TranspositionTableRetryLimit)
-                .Returns(0);
-            solverConfiguration
-                .Setup(t => t.MinimumSearchDepthToUseMtdf)
-                .Returns(4);
 
             return solverConfiguration.Object;
         }

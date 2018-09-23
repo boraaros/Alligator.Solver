@@ -13,8 +13,8 @@ namespace Alligator.TicTacToe
             {
                 throw new ArgumentOutOfRangeException(string.Format("Invalid row ({0}) or column ({1}) index", row, column));
             }
-            this.Row = row;
-            this.Column = column;
+            Row = row;
+            Column = column;
         }
 
         public override int GetHashCode()

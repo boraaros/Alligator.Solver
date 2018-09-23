@@ -16,3 +16,28 @@ The abstract core library of artificial intelligence for different two-player ze
 |principal variation| :heavy_check_mark: |mtd-f search| :heavy_check_mark: |enhanced transposition cutoff| :x: |
 |transposition table| :heavy_check_mark: |late move reduction| :x: |probcut| :x: |
 |killer heuristic| :heavy_check_mark: |null move heuristic| :x: |parallel search tree| :x: |
+
+### How to use the abstract solver
+
+First you need to model your specified board game.
+
+__Move__ - define the possible moves (for example with source or/and target cells or/and with piece type, ..)
+* the move shouldn't contain information about which player moves
+* you must override `GetHashCode` and `Equals` methods, because 'reference equals' isn't enough
+
+__Position__ - implement `IPosition<TMove>` interface (typically with game board, move history, who is the next player, ..)
+* Sometimes `Identifier` is only a very strong hash key, because the number of different positions is greater than 2^64 (for example chess)
+* `IsQuiet` can reduce horizont effect, but initially can be true by default
+* Computation of static evaluation value is difficult, but very important for optimization
+
+__Rules__ - implement `IRules<TPosition, TMove>` with specified game logics
+* `InitialPosition` method always should create new instance
+
+Then you can use the abstract solver component.
+
+__SolverConfiguration__ - implement `ISolverConfiguration` interface
+* Set the maximum thinking time per move
+* parallelization config isn't used yet
+
+__SolverFactory__ - provides new alpha-beta solver intances
+* for details see the tic-tac-toe demo in source code
