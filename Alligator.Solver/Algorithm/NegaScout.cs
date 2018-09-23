@@ -205,7 +205,7 @@ namespace Alligator.Solver.Algorithm
                 }
                 return IsOpponentsTurn(distanceFromRoot) ? value : -value;
             }
-            return rules.IsDraw(position) ? 0 : int.MaxValue - distanceFromRoot;
+            return rules.IsGoal(position) ? int.MaxValue - distanceFromRoot : 0;
         }
 
         private void CheckEvaluationValue(int value)

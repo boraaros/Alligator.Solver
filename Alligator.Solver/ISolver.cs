@@ -10,10 +10,10 @@ namespace Alligator.Solver
     public interface ISolver<TMove>
     {
         /// <summary>
-        /// Calculate the optimal next move from the game position defined by move history.
+        /// Calculates the optimal next move from the game position defined by move history.
         /// </summary>
-        /// <param name="moveHistory">ordered list of all previous move in the current game</param>
+        /// <param name="moveHistory">ordered list of all previous moves in the current game</param>
         /// <returns>the optimal next move</returns>
-        TMove CalculateNextMove(IList<TMove> moveHistory);
+        TMove OptimizeNextMove(IList<TMove> moveHistory);
     }
 }

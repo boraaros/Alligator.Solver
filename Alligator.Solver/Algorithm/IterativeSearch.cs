@@ -35,7 +35,7 @@ namespace Alligator.Solver.Algorithm
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public TMove CalculateNextMove(IList<TMove> history)
+        public TMove OptimizeNextMove(IList<TMove> history)
         {
             if (history == null) throw new ArgumentNullException(nameof(history));
 

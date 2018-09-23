@@ -3,7 +3,7 @@
 namespace Alligator.Solver
 {
     /// <summary>
-    /// Represent the game board.
+    /// Represents the game board.
     /// </summary>
     /// <typeparam name="TMove">type of moves in the specified game</typeparam>
     public interface IPosition<TMove>
@@ -19,18 +19,18 @@ namespace Alligator.Solver
         int Value { get; }
 
         /// <summary>
-        /// This game specified logics can reduce the horizon effect.
+        /// This game specified logic can reduce the horizon effect.
         /// </summary>
         bool IsQuiet { get; }    
 
         /// <summary>
-        /// Take the specified move.
+        /// Updates the position with the specified move.
         /// </summary>
         /// <param name="move">specified move</param>
         void Take(TMove move);
 
         /// <summary>
-        /// Take back the last move.
+        /// Withdraws the last move.
         /// </summary>
         void TakeBack();
     }

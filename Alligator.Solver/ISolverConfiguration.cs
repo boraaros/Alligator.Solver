@@ -3,7 +3,7 @@
 namespace Alligator.Solver
 {
     /// <summary>
-    /// This component can be used to configure the solver.
+    /// Can be used to configure the solver.
     /// </summary>
     public interface ISolverConfiguration
     {

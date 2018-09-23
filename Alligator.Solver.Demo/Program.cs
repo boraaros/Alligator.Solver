@@ -23,7 +23,7 @@ namespace Demo
             IList<TicTacToeCell> history = new List<TicTacToeCell>();
             bool aiStep = true;
 
-            while (!position.IsEnded)
+            while (rules.LegalMovesAt(position).Any())
             {
                 PrintPosition(position);
                 TicTacToeCell next;
@@ -66,7 +66,7 @@ namespace Demo
                 history.Add(next);
                 aiStep = !aiStep;
             }
-            if (!position.HasWinner)
+            if (!rules.IsGoal(position))
             {
                 Console.WriteLine("Game over, DRAW!");
             }
@@ -99,7 +99,7 @@ namespace Demo
 
         private static TicTacToeCell AiStep(IList<TicTacToeCell> history, ISolver<TicTacToeCell> solver)
         {
-            var next = solver.CalculateNextMove(history);
+            var next = solver.OptimizeNextMove(history);
 
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("Alligator is thinking...");

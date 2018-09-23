@@ -29,7 +29,7 @@ namespace Alligator.Solver.UnitTests
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            TicTacToeCell nextPly = solver.CalculateNextMove(history);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
 
             // Assert
             Assert.IsNotNull(nextPly);
@@ -57,7 +57,7 @@ namespace Alligator.Solver.UnitTests
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            TicTacToeCell nextPly = solver.CalculateNextMove(history);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
 
             // Assert
             Assert.AreEqual(1, nextPly.Row);
@@ -85,7 +85,7 @@ namespace Alligator.Solver.UnitTests
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            TicTacToeCell nextPly = solver.CalculateNextMove(history);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
 
             // Assert
             Assert.AreEqual(1, nextPly.Row);
@@ -120,7 +120,7 @@ namespace Alligator.Solver.UnitTests
             ISolver<TicTacToeCell> solver = solverFactory.Create();
 
             // Act
-            TicTacToeCell nextPly = solver.CalculateNextMove(history);
+            TicTacToeCell nextPly = solver.OptimizeNextMove(history);
         }
 
         private ISolverConfiguration GetSolverConfiguration()
