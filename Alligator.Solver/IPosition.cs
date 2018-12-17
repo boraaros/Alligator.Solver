@@ -14,7 +14,7 @@ namespace Alligator.Solver
         ulong Identifier { get; }
 
         /// <summary>
-        /// Static evaluation value.
+        /// Static evaluation value. TODO: From which player's point of view?
         /// </summary>
         int Value { get; }
 
@@ -30,7 +30,7 @@ namespace Alligator.Solver
         void Take(TMove move);
 
         /// <summary>
-        /// Withdraws the last move.
+        /// Withdraws the last move. TODO: Remove this method, 'Take' should create new Position instance!
         /// </summary>
         void TakeBack();
     }

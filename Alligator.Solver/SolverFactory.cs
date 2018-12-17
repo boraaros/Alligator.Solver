@@ -1,6 +1,4 @@
 ﻿using Alligator.Solver.Algorithm;
-using Alligator.Solver.Caches;
-using Alligator.Solver.Heuristics;
 using System;
 
 namespace Alligator.Solver
@@ -41,13 +39,18 @@ namespace Alligator.Solver
         /// <returns>new solver instance</returns>
         public ISolver<TMove> Create()
         {
-            return new IterativeSearch<TPosition, TMove>(
+            var stm = new SearchTreeManager(solverConfiguration.TimeLimitPerMove);
+
+            return new IterativeDeepeningSearch<TPosition, TMove>(
                 rules,
-                new CacheTables<TPosition, TMove>(new CachesSettings()),
-                new HeuristicTables<TMove>(),
-                solverConfiguration,
-                new AlgorithmSettings(),
-                logger);
+                stm,
+                new AlphaBetaPruning<TPosition, TMove>(
+                    rules,
+                    stm,
+                    new HeuristicTables<TMove>(),
+                    new CacheTables<TPosition, TMove>(new CachesSettings())),
+                logger
+                );
         }
     }
 }

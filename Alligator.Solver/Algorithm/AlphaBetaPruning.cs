@@ -1,49 +1,40 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Alligator.Solver.Caches;
-using Alligator.Solver.Heuristics;
 
 namespace Alligator.Solver.Algorithm
 {
-    internal class NegaScout<TPosition, TMove> : IMiniMax<TPosition>
+    internal class AlphaBetaPruning<TPosition, TMove> : IAlphaBetaPruning<TPosition>
         where TPosition : IPosition<TMove>
     {
         private readonly IRules<TPosition, TMove> rules;
+        private readonly ISearchTreeManager searchTreeManager;
         private readonly IHeuristicTables<TMove> heuristicTables;
         private readonly ICacheTables<TPosition, TMove> cacheTables;
-        private readonly MiniMaxSettings miniMaxSettings;
 
-        private bool isStopRequested;
-
-        public NegaScout(
+        public AlphaBetaPruning(
             IRules<TPosition, TMove> rules,
-            ICacheTables<TPosition, TMove> cacheTables,
+            ISearchTreeManager searchTreeManager,
             IHeuristicTables<TMove> heuristicTables,
-            MiniMaxSettings miniMaxSettings)
+            ICacheTables<TPosition, TMove> cacheTables)
         {
             this.rules = rules ?? throw new ArgumentNullException(nameof(rules));
-            this.cacheTables = cacheTables ?? throw new ArgumentNullException(nameof(cacheTables));
+            this.searchTreeManager = searchTreeManager ?? throw new ArgumentNullException(nameof(searchTreeManager));
             this.heuristicTables = heuristicTables ?? throw new ArgumentNullException(nameof(heuristicTables));
-            this.miniMaxSettings = miniMaxSettings ?? throw new ArgumentNullException(nameof(miniMaxSettings));
+            this.cacheTables = cacheTables ?? throw new ArgumentNullException(nameof(cacheTables));
         }
 
-        public int Start(TPosition position, int initialAlpha, int initialBeta)
+        public int Search(TPosition position, int initialAlpha, int initialBeta)
         {
-            isStopRequested = false;
-            return SearchRecursively(position, miniMaxSettings.MaxDepth, initialAlpha, initialBeta);
-        }
-
-        public int Start(TPosition position)
-        {
-            return Start(position, -int.MaxValue, int.MaxValue);
+            return SearchRecursively(position, searchTreeManager.StandardDepthLimit, initialAlpha, initialBeta);
         }
 
         private int SearchRecursively(TPosition position, int depth, int alpha, int beta)
         {
             int originalAlpha = alpha;
-            Transposition<TMove> transposition;
-            if (cacheTables.TryGetTransposition(position, out transposition) && depth <= transposition.Depth)
+
+            if (cacheTables.TryGetTransposition(position, out Transposition<TMove> transposition) && 
+                depth <= transposition.Depth)
             {
                 switch (transposition.EvaluationMode)
                 {
@@ -68,27 +59,14 @@ namespace Alligator.Solver.Algorithm
             }
             int bestValue = int.MinValue;
             TMove besTMove = default(TMove);
-            bool isFirst = true;
+
             foreach (var move in OrderedStrategies(position, depth))
             {
                 position.Take(move);
-                int value = 0;
-                if (isFirst)
-                {
-                    value = -SearchRecursively(position, depth - 1, -beta, -alpha);
-                    isFirst = false;
-                }
-                else
-                {
-                    value = -SearchRecursively(position, depth - 1, -alpha - 1, -alpha);
-                    if (alpha < value && value < beta)
-                    {
-                        value = -SearchRecursively(position, depth - 1, -beta, -value);
-                    }
-                }
+                int value = -SearchRecursively(position, depth - 1, -beta, -alpha);
                 position.TakeBack();
 
-                if (isStopRequested)
+                if (searchTreeManager.IsStopRequested())
                 {
                     return 0;
                 }
@@ -126,7 +104,7 @@ namespace Alligator.Solver.Algorithm
 
         private void HandleBetaCutOff(TMove move, int depth)
         {
-            if (!isStopRequested && !IsQuiescenceExtension(depth))
+            if (!searchTreeManager.IsStopRequested() && !IsQuiescenceExtension(depth))
             {
                 heuristicTables.StoreBetaCutOff(move, depth);
             }
@@ -188,12 +166,12 @@ namespace Alligator.Solver.Algorithm
             {
                 return true;
             }
-            return depth <= -miniMaxSettings.MaxQuiescenceDepth;
+            return depth <= -searchTreeManager.QuiescenceDepthLimit;
         }
 
         private int HeuristicValue(TPosition position, int depth)
         {
-            int distanceFromRoot = miniMaxSettings.MaxDepth - depth;
+            int distanceFromRoot = searchTreeManager.StandardDepthLimit - depth;
             if (rules.LegalMovesAt(position).Any())
             {
                 int value;
@@ -203,27 +181,23 @@ namespace Alligator.Solver.Algorithm
                     CheckEvaluationValue(value);
                     cacheTables.AddValue(position, value);
                 }
-                return IsOpponentsTurn(distanceFromRoot) ? value : -value;
+                return IsOpponentsTurn(distanceFromRoot) ? -value : value;
             }
             return rules.IsGoal(position) ? int.MaxValue - distanceFromRoot : 0;
         }
 
         private void CheckEvaluationValue(int value)
         {
-            if (value >= int.MaxValue - miniMaxSettings.MaxDepth || value <= -int.MaxValue + miniMaxSettings.MaxDepth)
+            if (value >= int.MaxValue - searchTreeManager.StandardDepthLimit || 
+                value <= -int.MaxValue + searchTreeManager.StandardDepthLimit)
             {
-                throw new ArgumentOutOfRangeException("value", value, "Invalid evaluation value");
+                throw new ArgumentOutOfRangeException("value", value, "Invalid static evaluation value");
             }
         }
 
         private bool IsOpponentsTurn(int distanceFromRoot)
         {
             return distanceFromRoot % 2 != 0;
-        }
-
-        public void Stop()
-        {
-            isStopRequested = true;
         }
     }
 }

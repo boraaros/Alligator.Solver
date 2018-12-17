@@ -1,4 +1,4 @@
-﻿using Alligator.Solver.Heuristics;
+﻿using Alligator.Solver.Algorithm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -83,22 +83,6 @@ namespace Alligator.Solver.UnitTests.Heuristics
         }
 
         [TestMethod]
-        public void Heuristic_tables_does_not_return_killer_plies_after_clear()
-        {
-            // Arrange
-            var heuristicTables = new HeuristicTables<string>();
-
-            // Act
-            heuristicTables.StoreBetaCutOff(testMoves[0], 1);
-            heuristicTables.StoreBetaCutOff(testMoves[1], 1);
-            heuristicTables.ClearTables();
-            IList<string> result = heuristicTables.GetKillerPlies(1).ToList();
-
-            // Assert
-            Assert.AreEqual(0, result.Count);
-        }
-
-        [TestMethod]
         public void Heuristic_tables_calculate_history_score()
         {
             // Arrange
@@ -126,21 +110,6 @@ namespace Alligator.Solver.UnitTests.Heuristics
 
             // Assert
             Assert.AreEqual(1, result);
-        }
-
-        [TestMethod]
-        public void Heuristic_tables_return_zero_history_score_after_clear()
-        {
-            // Arrange
-            var heuristicTables = new HeuristicTables<string>();
-
-            // Act
-            heuristicTables.StoreBetaCutOff(testMoves[0], 1);
-            heuristicTables.ClearTables();
-            int result = heuristicTables.GetHistoryScore(testMoves[0]);
-
-            // Assert
-            Assert.AreEqual(0, result);
         }
     }
 }
