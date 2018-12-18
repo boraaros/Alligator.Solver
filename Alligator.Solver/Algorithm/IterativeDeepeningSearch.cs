@@ -43,30 +43,47 @@ namespace Alligator.Solver.Algorithm
 
             TMove result = default(TMove);
 
-            for (int i = 0; i < int.MaxValue; i++)
+            int iterationCount = 0;
+            int stabilityPoint = 0;
+
+            while (true)
             {
                 var nextCandidate = BestNodeSearch(position);
 
-                // TODO: optimal|heuristic
-
                 if (searchTreeManager.IsStopRequested())
                 {
-                    if (i == 0)
-                    {
-                        throw new InvalidOperationException($"Solver was not enough time to optimize next move");
-                    }
                     break;
+                }
+
+                if (nextCandidate.Equals(result))
+                {
+                    stabilityPoint++;
+                }
+                else
+                {
+                    stabilityPoint = 1;
                 }
 
                 result = nextCandidate;
                 searchTreeManager.IterationCompleted();
-                logger($"Iteration #{i} has been completed with result: {result}");          
+                iterationCount++;
+                logger($"Iteration #{iterationCount} has been completed with result: {result}"); 
+                
+                if (stabilityPoint == 10)
+                {
+                    break;
+                }
+            }
+
+            if (iterationCount == 0)
+            {
+                throw new InvalidOperationException($"Solver was not enough time to optimize next move");
             }
 
             return result;
         }
 
-        private TMove BestNodeSearch(TPosition position)
+        private TMove BestNodeSearch(TPosition position) // TODO: initial guess from previous iteration!
         {
             var alpha = -int.MaxValue;
             var beta = int.MaxValue;
@@ -111,7 +128,7 @@ namespace Alligator.Solver.Algorithm
                     break;
                 }
             }
-
+        
             return candidates.First();
         }
 

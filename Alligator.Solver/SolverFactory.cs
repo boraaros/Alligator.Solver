@@ -34,14 +34,14 @@ namespace Alligator.Solver
         }
 
         /// <summary>
-        /// Creates new iterative alpha-beta solver instance.
+        /// Creates new iterative alpha-beta based solver instance.
         /// </summary>
         /// <returns>new solver instance</returns>
         public ISolver<TMove> Create()
         {
             var stm = new SearchTreeManager(solverConfiguration.TimeLimitPerMove);
 
-            return new IterativeDeepeningSearch<TPosition, TMove>(
+            var solver = new IterativeDeepeningSearch<TPosition, TMove>(
                 rules,
                 stm,
                 new AlphaBetaPruning<TPosition, TMove>(
@@ -51,6 +51,10 @@ namespace Alligator.Solver
                     new CacheTables<TPosition, TMove>(new CachesSettings())),
                 logger
                 );
+
+            logger($"New solver instance has been created");
+
+            return solver;
         }
     }
 }

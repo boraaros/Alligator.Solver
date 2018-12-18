@@ -158,14 +158,11 @@ namespace Alligator.Solver.Algorithm
 
         private bool IsLeaf(TPosition position, int depth)
         {
-            if (!rules.LegalMovesAt(position).Any())
+            if (depth <= 0 && position.IsQuiet || !rules.LegalMovesAt(position).Any())
             {
                 return true;
             }
-            if (depth <= 0 && position.IsQuiet)
-            {
-                return true;
-            }
+
             return depth <= -searchTreeManager.QuiescenceDepthLimit;
         }
 
