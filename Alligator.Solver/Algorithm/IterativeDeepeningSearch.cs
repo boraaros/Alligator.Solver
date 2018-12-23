@@ -28,62 +28,39 @@ namespace Alligator.Solver.Algorithm
         {
             if (moveHistory == null) throw new ArgumentNullException(nameof(moveHistory));
 
+            logger("Search algorithm has been started");
             searchTreeManager.Restart();
 
-            var position = rules.InitialPosition();
-            foreach (var move in moveHistory)
-            {
-                position.Take(move);
-            }
+            TPosition position = CreatePosition(moveHistory);
 
-            if (!rules.LegalMovesAt(position).Any())
-            {
-                throw new InvalidOperationException("Next move calculation failed, because the game is already over");
-            }
-
-            TMove result = default(TMove);
-
-            int iterationCount = 0;
-            int stabilityPoint = 0;
+            var candidatesPerIteration = new List<ICollection<TMove>>();
 
             while (true)
             {
-                var nextCandidate = BestNodeSearch(position);
+                var nextCandidates = BestNodeSearch(position);
+
+                candidatesPerIteration.Add(nextCandidates);
+                searchTreeManager.IterationCompleted();
+                logger($"Iteration #{candidatesPerIteration.Count} completed with result: {string.Join(", ", nextCandidates)}");
 
                 if (searchTreeManager.IsStopRequested())
                 {
+                    logger("Search algorithm has been finished because the time is over");
                     break;
                 }
-
-                if (nextCandidate.Equals(result))
+                if (IsStable(candidatesPerIteration))
                 {
-                    stabilityPoint++;
-                }
-                else
-                {
-                    stabilityPoint = 1;
-                }
-
-                result = nextCandidate;
-                searchTreeManager.IterationCompleted();
-                iterationCount++;
-                logger($"Iteration #{iterationCount} has been completed with result: {result}"); 
-                
-                if (stabilityPoint == 10)
-                {
+                    logger("Search algorithm has been finished because the result is stable");
                     break;
                 }
             }
 
-            if (iterationCount == 0)
-            {
-                throw new InvalidOperationException($"Solver was not enough time to optimize next move");
-            }
-
-            return result;
+            var optimalNextMove = SelectMove(candidatesPerIteration);
+            logger($"Optimal next move: {optimalNextMove}");
+            return optimalNextMove;
         }
 
-        private TMove BestNodeSearch(TPosition position) // TODO: initial guess from previous iteration!
+        private ICollection<TMove> BestNodeSearch(TPosition position) // TODO: initial guess from previous iteration!
         {
             var alpha = -int.MaxValue;
             var beta = int.MaxValue;
@@ -98,19 +75,16 @@ namespace Alligator.Solver.Algorithm
 
                 foreach (var move in candidates)
                 {
-                    position.Take(move);
-                    var value = -minimax.Search(position, -guess, -(guess - 1));
-
-                    if (value >= guess)
-                    {
-                        newCandidates.Add(move);
-                    }
-                    position.TakeBack();
+                    int value = NullWindowTest(position, move, guess);
 
                     if (searchTreeManager.IsStopRequested())
                     {
                         break;
                     }
+                    if (value >= guess)
+                    {
+                        newCandidates.Add(move);
+                    }    
                 }
 
                 if (newCandidates.Count > 0)
@@ -122,14 +96,54 @@ namespace Alligator.Solver.Algorithm
                 {
                     beta = guess;
                 }
-
-                if (searchTreeManager.IsStopRequested())
-                {
-                    break;
-                }
             }
         
-            return candidates.First();
+            return candidates;
+        }
+
+        private TPosition CreatePosition(IEnumerable<TMove> moveHistory)
+        {
+            var position = rules.InitialPosition();
+            foreach (var move in moveHistory)
+            {
+                position.Take(move);
+            }
+
+            if (!rules.LegalMovesAt(position).Any())
+            {
+                throw new InvalidOperationException("Next move calculation failed because the game is already over");
+            }
+
+            return position;
+        }
+
+        private bool IsStable(IEnumerable<ICollection<TMove>> candidatesPerIteration)
+        {
+            return candidatesPerIteration.Any()
+                && candidatesPerIteration.Last().Any(t => GetStabilityIndex(candidatesPerIteration, t) >= 10); // TODO: magic number
+        }
+
+        private TMove SelectMove(IEnumerable<ICollection<TMove>> candidatesPerIteration)
+        {
+            if (!candidatesPerIteration.Any())
+            {
+                throw new InvalidOperationException($"Solver does not have enough time to optimize next move");
+            }
+
+            return candidatesPerIteration.Last().OrderByDescending(t => GetStabilityIndex(candidatesPerIteration, t)).First();
+        }
+
+        private int GetStabilityIndex(IEnumerable<ICollection<TMove>> candidatesPerIteration, TMove move)
+        {
+            return candidatesPerIteration.Reverse().TakeWhile(t => t.Contains(move)).Count();
+        }
+
+        private int NullWindowTest(TPosition position, TMove move, int guess)
+        {
+            position.Take(move);
+            var value = -minimax.Search(position, -guess, -(guess - 1));
+            position.TakeBack();
+            return value;
         }
 
         private int NextGuess(int alpha, int beta, int count)
