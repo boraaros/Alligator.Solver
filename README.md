@@ -13,7 +13,7 @@ The abstract core library of artificial intelligence for different two-player ze
 |negamax algorithm| :heavy_check_mark: |history heuristic| :heavy_check_mark: |futility pruning| :x: |
 |alpha-beta pruning| :heavy_check_mark: |null window search| :heavy_check_mark: |tactical & counter moves| :x: |
 |iterative deepening search| :heavy_check_mark: |quiescence search| :heavy_check_mark: |internal iterative deepening| :x: |
-|principal variation| :heavy_check_mark: |mtd-f search| :heavy_check_mark: |enhanced transposition cutoff| :x: |
+|principal variation| :heavy_check_mark: |best node search| :heavy_check_mark: |enhanced transposition cutoff| :x: |
 |transposition table| :heavy_check_mark: |late move reduction| :x: |probcut| :x: |
 |killer heuristic| :heavy_check_mark: |null move heuristic| :x: |parallel search tree| :x: |
 
