@@ -1,4 +1,4 @@
-﻿using Alligator.Solver.Caches;
+﻿using Alligator.Solver.Algorithm;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 

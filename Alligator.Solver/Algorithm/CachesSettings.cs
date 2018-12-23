@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Alligator.Solver.Caches
+namespace Alligator.Solver.Algorithm
 {
     internal class CachesSettings : ICachesSettings
     {

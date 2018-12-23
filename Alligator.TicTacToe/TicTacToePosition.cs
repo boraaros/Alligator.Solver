@@ -41,7 +41,7 @@ namespace Alligator.TicTacToe
             }
             if (board[move.Row, move.Column] != TicTacToeMark.Empty)
             {
-                throw new InvalidOperationException(string.Format("Cannot mark, because target cell isn't empty: [{0},{1}]",
+                throw new InvalidOperationException(string.Format("Cannot mark because target cell is not empty: [{0},{1}]",
                     move.Row, move.Column));
             }
             board[move.Row, move.Column] = nextMarkType;
@@ -59,7 +59,7 @@ namespace Alligator.TicTacToe
             var lasTMove = History[History.Count - 1];
             if (board[lasTMove.Row, lasTMove.Column] == TicTacToeMark.Empty)
             {
-                throw new InvalidOperationException($"Cannot remove mark, because target cell is already empty: [{lasTMove.Row},{lasTMove.Column}]");
+                throw new InvalidOperationException($"Cannot remove mark because target cell is already empty: [{lasTMove.Row},{lasTMove.Column}]");
             }
             board[lasTMove.Row, lasTMove.Column] = TicTacToeMark.Empty;
             History.RemoveAt(History.Count - 1);
