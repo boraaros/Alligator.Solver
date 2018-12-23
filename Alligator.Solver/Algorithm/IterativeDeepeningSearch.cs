@@ -158,7 +158,17 @@ namespace Alligator.Solver.Algorithm
                 alpha = Math.Max(alpha, -int.MaxValue / 2);
             }
 
-            return (int)(alpha + (count - 1.0) / count * (beta - alpha));
+            var guess = (int)(alpha + (count - 1.0) / count * (beta - alpha));
+
+            if (guess == alpha)
+            {
+                return guess + 1;
+            }
+            else if (guess == beta)
+            {
+                return guess - 1;
+            }
+            return guess;
         }
     }
 }
