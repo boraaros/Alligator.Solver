@@ -4,14 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Alligator.Solver</PackageId>
-    <Version>2.1.0</Version>
+    <Version>2.1.1</Version>
     <Authors>Adrian Bilics</Authors>
     <Description>The abstract core library of artificial intelligence for different two-player zero-sum games.</Description>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/boraaros/Alligator.Solver/tree/master/Alligator.Solver</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/boraaros/Alligator.Solver/master/Icon.gif</PackageIconUrl>
     <PackageTags>game-theory artificial-intelligence</PackageTags>
-    <PackageReleaseNotes>Core logics changed from mtd-f search to best node search</PackageReleaseNotes>
+    <PackageReleaseNotes>Best node search algorithm bugfix</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>
