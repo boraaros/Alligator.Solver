@@ -87,6 +87,10 @@ namespace Alligator.Solver.Algorithm
                     }    
                 }
 
+                if (searchTreeManager.IsStopRequested())
+                {
+                    break;
+                }
                 if (newCandidates.Count > 0)
                 {
                     candidates = newCandidates;
